@@ -1,0 +1,8 @@
+{
+  "name": "Principia Calculus",
+  "description": "Accelerated university-level Calculus I & II learning platform with a 14-day mastery roadmap, interactive mathematical labs, worked derivations, timed exams, and a searchable formula vault.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
