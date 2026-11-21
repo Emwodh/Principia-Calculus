@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -6,55 +6,92 @@ import {
   ChevronLeft,
   ChevronRight,
   Circle,
+  Clock,
   ExternalLink,
   Maximize2,
   Minimize2,
   PlayCircle,
 } from 'lucide-react';
 import type { ExternalResource, VideoLecture } from '../types/course';
+import {
+  estimateVideoDurationMinutes,
+  formatDurationPair,
+} from '../utils/courseProgress';
 
 interface VideoCourseTheaterProps {
-  moduleDayNumber: number;
+  moduleLabel: string;
   videos: VideoLecture[];
   externalResources: ExternalResource[];
   watchedVideoIds: string[];
+  savedVideoId?: string;
   isTheaterMode: boolean;
+  onSelectVideoId: (videoId: string) => void;
   onToggleTheaterMode: () => void;
   onToggleWatchedVideo: (videoId: string) => void;
   onProceedToTextbook: () => void;
 }
 
+function formatResourceKind(kind?: ExternalResource['resourceKind']): string | null {
+  if (kind === 'theory') return 'Textbook Theory';
+  if (kind === 'exercises') return 'Practice Exercises';
+  if (kind === 'playlist') return 'Full Playlist';
+  return null;
+}
+
 export function VideoCourseTheater({
-  moduleDayNumber,
+  moduleLabel,
   videos,
   externalResources,
   watchedVideoIds,
+  savedVideoId,
   isTheaterMode,
+  onSelectVideoId,
   onToggleTheaterMode,
   onToggleWatchedVideo,
   onProceedToTextbook,
 }: VideoCourseTheaterProps) {
-  const [selectedVideoId, setSelectedVideoId] = useState<string>(videos[0]?.id ?? '');
   const stageRef = useRef<HTMLElement | null>(null);
+  const watchedSet = useMemo(() => new Set(watchedVideoIds), [watchedVideoIds]);
+
+  // Resume saved lecture, otherwise first unwatched lecture, otherwise first lecture
+  const activeVideoId = useMemo(() => {
+    if (savedVideoId && videos.some((v) => v.id === savedVideoId)) {
+      return savedVideoId;
+    }
+    const firstUnwatched = videos.find((v) => !watchedSet.has(v.id));
+    return firstUnwatched?.id ?? videos[0]?.id ?? '';
+  }, [savedVideoId, videos, watchedSet]);
 
   useEffect(() => {
-    setSelectedVideoId(videos[0]?.id ?? '');
-  }, [moduleDayNumber, videos]);
+    if (activeVideoId && activeVideoId !== savedVideoId) {
+      onSelectVideoId(activeVideoId);
+    }
+  }, [activeVideoId, savedVideoId, onSelectVideoId]);
 
-  const handleToggleTheater = () => {
-    onToggleTheaterMode();
+  const scrollPlayerIntoView = () => {
     window.requestAnimationFrame(() => {
       stageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   };
 
+  const handlePickLecture = (videoId: string, shouldScroll = false) => {
+    onSelectVideoId(videoId);
+    if (shouldScroll) {
+      scrollPlayerIntoView();
+    }
+  };
+
+  const handleToggleTheater = () => {
+    onToggleTheaterMode();
+    scrollPlayerIntoView();
+  };
+
   const activeIndex = Math.max(
     0,
-    videos.findIndex((v) => v.id === selectedVideoId)
+    videos.findIndex((v) => v.id === activeVideoId)
   );
   const activeVideo = videos[activeIndex] ?? videos[0];
 
-  const watchedSet = new Set(watchedVideoIds);
   const watchedInModule = videos.filter((v) => watchedSet.has(v.id)).length;
 
   if (!activeVideo) {
@@ -64,6 +101,7 @@ export function VideoCourseTheater({
   const prevVideo = activeIndex > 0 ? videos[activeIndex - 1] : null;
   const nextVideo = activeIndex < videos.length - 1 ? videos[activeIndex + 1] : null;
   const isActiveWatched = watchedSet.has(activeVideo.id);
+  const activeDuration = formatDurationPair(estimateVideoDurationMinutes(activeVideo));
   const embedUrl = `https://www.youtube-nocookie.com/embed/${activeVideo.youtubeId}?rel=0`;
   const watchOnYoutubeUrl = `https://www.youtube.com/watch?v=${activeVideo.youtubeId}`;
 
@@ -72,7 +110,7 @@ export function VideoCourseTheater({
       onToggleWatchedVideo(activeVideo.id);
     }
     if (nextVideo) {
-      setSelectedVideoId(nextVideo.id);
+      handlePickLecture(nextVideo.id, true);
     } else {
       onProceedToTextbook();
     }
@@ -114,6 +152,13 @@ export function VideoCourseTheater({
                 <span className="font-mono-tabular">
                   Lecture {activeIndex + 1} of {videos.length}
                 </span>
+                <span aria-hidden="true">·</span>
+                <span className="inline-flex items-center gap-1 font-mono-tabular text-[#475569]">
+                  <Clock className="w-3 h-3" />
+                  <span>
+                    {activeDuration.normal} ({activeDuration.fast15x})
+                  </span>
+                </span>
                 {isActiveWatched && (
                   <>
                     <span aria-hidden="true">·</span>
@@ -132,7 +177,7 @@ export function VideoCourseTheater({
                 <button
                   type="button"
                   disabled={!prevVideo}
-                  onClick={() => prevVideo && setSelectedVideoId(prevVideo.id)}
+                  onClick={() => prevVideo && handlePickLecture(prevVideo.id, false)}
                   aria-label="Previous lecture"
                   className="inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-[#334155] hover:bg-[#E2E8F0] disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer"
                 >
@@ -143,7 +188,7 @@ export function VideoCourseTheater({
                 <button
                   type="button"
                   disabled={!nextVideo}
-                  onClick={() => nextVideo && setSelectedVideoId(nextVideo.id)}
+                  onClick={() => nextVideo && handlePickLecture(nextVideo.id, false)}
                   aria-label="Next lecture"
                   className="inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-[#334155] hover:bg-[#E2E8F0] disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer"
                 >
@@ -222,21 +267,21 @@ export function VideoCourseTheater({
         </div>
       </section>
 
-      {/* Horizontal Multi-Column Day Lecture Playlist Queue */}
+      {/* Horizontal Multi-Column Module Lecture Playlist Queue */}
       <section
-        aria-label="Day lecture playlist"
+        aria-label="Module lecture playlist"
         className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 sm:p-6 space-y-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
           <div>
             <h3 className="font-display text-lg font-semibold text-[#0F172A]">
-              Day {moduleDayNumber} Lecture Queue{' '}
+              {moduleLabel} Lecture Queue{' '}
               <span className="font-mono-tabular text-sm font-medium text-[#1D4ED8] ml-1.5">
                 {watchedInModule}/{videos.length} watched
               </span>
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Select any lecture below to load it into the cinema player above.
+              Select any lecture below to load it and jump straight to the cinema player.
             </p>
           </div>
 
@@ -274,11 +319,12 @@ export function VideoCourseTheater({
           {videos.map((vid, idx) => {
             const isSelected = vid.id === activeVideo.id;
             const isWatched = watchedSet.has(vid.id);
+            const dur = formatDurationPair(estimateVideoDurationMinutes(vid));
             return (
               <li key={vid.id}>
                 <button
                   type="button"
-                  onClick={() => setSelectedVideoId(vid.id)}
+                  onClick={() => handlePickLecture(vid.id, true)}
                   aria-current={isSelected ? 'true' : undefined}
                   className={`w-full h-full text-left p-3.5 rounded-lg border flex items-start gap-3 cursor-pointer ${
                     isSelected
@@ -297,9 +343,12 @@ export function VideoCourseTheater({
                       />
                     )}
                   </div>
-                  <div className="min-w-0 space-y-1">
-                    <div className="text-[11px] text-[#64748B] font-mono-tabular">
-                      0{idx + 1} · {vid.instructor} · {vid.lectureCode}
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center justify-between gap-2 text-[11px] text-[#64748B] font-mono-tabular">
+                      <span className="truncate">
+                        0{idx + 1} · {vid.instructor}
+                      </span>
+                      <span className="shrink-0 text-[#475569]">{dur.normal}</span>
                     </div>
                     <div
                       className={`text-sm leading-snug ${
@@ -310,6 +359,9 @@ export function VideoCourseTheater({
                     >
                       {vid.title}
                     </div>
+                    <div className="text-[11px] font-mono-tabular text-[#64748B]">
+                      {vid.lectureCode} · {dur.fast15x}
+                    </div>
                   </div>
                 </button>
               </li>
@@ -318,17 +370,17 @@ export function VideoCourseTheater({
         </ul>
       </section>
 
-      {/* Curated Open-University Web Material for This Day */}
+      {/* Curated Open-University Web Material for This Module */}
       <section className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-[#1D4ED8] shrink-0" />
             <h3 className="font-display text-lg font-semibold text-[#0F172A]">
-              University Readings &amp; Problem Archives for Day {moduleDayNumber}
+              University Readings &amp; Problem Archives for {moduleLabel}
             </h3>
           </div>
           <span className="text-xs text-[#64748B] hidden sm:inline">
-            Open-access textbooks &amp; extra drills
+            OpenStax theory · Paul&rsquo;s Notes exercises
           </span>
         </div>
 
@@ -337,31 +389,37 @@ export function VideoCourseTheater({
             externalResources.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'
           }`}
         >
-          {externalResources.map((res) => (
-            <a
-              key={res.title}
-              href={res.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-4 rounded-lg bg-[#F8FAFC] hover:bg-[#EFF6FF]/60 border border-[#E2E8F0] hover:border-[#93C5FD] transition-colors flex flex-col justify-between gap-2.5 group"
-            >
-              <div className="space-y-1">
-                <div className="text-[11px] font-medium text-[#1D4ED8]">
-                  {res.provider}
+          {externalResources.map((res) => {
+            const kindLabel = formatResourceKind(res.resourceKind);
+            return (
+              <a
+                key={res.title}
+                href={res.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-lg bg-[#F8FAFC] hover:bg-[#EFF6FF]/60 border border-[#E2E8F0] hover:border-[#93C5FD] transition-colors flex flex-col justify-between gap-2.5 group"
+              >
+                <div className="space-y-1">
+                  <div className="text-[11px] font-medium text-[#1D4ED8]">
+                    {res.provider}
+                    {kindLabel && (
+                      <span className="text-[#64748B]"> · {kindLabel}</span>
+                    )}
+                  </div>
+                  <div className="text-sm font-semibold text-[#0F172A] group-hover:text-[#1D4ED8] leading-snug">
+                    {res.title}
+                  </div>
+                  <p className="text-xs text-[#475569] leading-relaxed">
+                    {res.description}
+                  </p>
                 </div>
-                <div className="text-sm font-semibold text-[#0F172A] group-hover:text-[#1D4ED8] leading-snug">
-                  {res.title}
+                <div className="inline-flex items-center gap-1 text-xs font-semibold text-[#1D4ED8] pt-1">
+                  <span>Open Resource</span>
+                  <ExternalLink className="w-3 h-3" />
                 </div>
-                <p className="text-xs text-[#475569] leading-relaxed">
-                  {res.description}
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-1 text-xs font-semibold text-[#1D4ED8] pt-1">
-                <span>Open Resource</span>
-                <ExternalLink className="w-3 h-3" />
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
       </section>
     </div>

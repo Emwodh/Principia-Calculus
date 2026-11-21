@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react';
 import { Eye, EyeOff, Printer, Search } from 'lucide-react';
 import { FORMULA_VAULT } from '../data/formulas';
 import type { FormulaEntry } from '../types/course';
+import { formatCourseTrackName } from '../utils/courseProgress';
 import { MathTex } from './MathTex';
 
 const CATEGORIES: ('All' | FormulaEntry['category'])[] = [
   'All',
+  'Pre-Algebra & Trig',
   'Limits & Continuity',
   'Derivatives',
   'Integrals',
@@ -52,12 +54,12 @@ export function FormulaVaultView() {
             Master Reference &amp; Active Recall · {FORMULA_VAULT.length} Essential University Identities
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold text-[#0F172A] text-balance">
-            Calculus I &amp; II Formula Vault
+            Pre-Algebra &amp; Calculus I–II Formula Vault
           </h1>
           <p className="text-sm sm:text-base text-[#475569]">
-            Every limit, derivative, integration technique, convergence test, and Maclaurin
-            expansion in one searchable sheet. Switch on Active Recall Mode to test your
-            memory before exams.
+            Every algebra/trig foundation, limit, derivative, integration technique,
+            convergence test, and Maclaurin expansion in one searchable sheet. Switch on
+            Active Recall Mode to test your memory before exams.
           </p>
         </div>
 
@@ -205,8 +207,7 @@ export function FormulaVaultView() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-xs text-[#64748B]">
-                      {entry.category} ·{' '}
-                      {entry.course === 'calc1' ? 'Calculus I' : 'Calculus II'}
+                      {entry.category} · {formatCourseTrackName(entry.course)}
                     </div>
                     <h2 className="text-base font-semibold text-[#0F172A] mt-0.5">
                       {entry.name}

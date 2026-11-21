@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  BookMarked,
   BookOpen,
   CheckCircle2,
   ChevronDown,
@@ -14,13 +15,22 @@ import {
   List,
   PanelLeftClose,
   PanelLeftOpen,
+  RotateCcw,
+  Search,
   X,
 } from 'lucide-react';
 import { MODULE_MEDIA_MAP } from '../data/moduleMediaAndNotes';
+import { TEXTBOOK_PREALG } from '../data/moduleTextbookPreAlg';
 import { TEXTBOOK_CALC1 } from '../data/moduleTextbookCalc1';
 import { TEXTBOOK_CALC2 } from '../data/moduleTextbookCalc2';
 import type { CourseModule, StudioTab, UserProgressState } from '../types/course';
-import { getModuleScheduleSlot } from '../utils/courseProgress';
+import {
+  formatModuleNumberPrefix,
+  formatModuleShortLabel,
+  getModuleScheduleSlot,
+  getModulesForStartingTrack,
+} from '../utils/courseProgress';
+import { FormulaDrawer } from './FormulaDrawer';
 import { InteractiveLab } from './InteractiveLab';
 import { MathTex } from './MathTex';
 import { VideoCourseTheater } from './VideoCourseTheater';
@@ -28,11 +38,15 @@ import { VideoCourseTheater } from './VideoCourseTheater';
 interface StudyStudioViewProps {
   modules: CourseModule[];
   activeModule: CourseModule;
+  activeTab: StudioTab;
   progress: UserProgressState;
   onSelectModule: (moduleId: string) => void;
+  onChangeTab: (tab: StudioTab) => void;
   onToggleComplete: (moduleId: string) => void;
   onToggleWatchedVideo: (videoId: string) => void;
+  onSelectModuleVideo: (moduleId: string, videoId: string) => void;
   onRecordAnswer: (problemId: string, selectedOptionId: string, isCorrect: boolean) => void;
+  onClearAnswer: (problemId: string) => void;
   onBackToPlan: () => void;
 }
 
@@ -47,55 +61,87 @@ const STUDIO_TABS: { id: StudioTab; label: string }[] = [
 export function StudyStudioView({
   modules,
   activeModule,
+  activeTab,
   progress,
   onSelectModule,
+  onChangeTab,
   onToggleComplete,
   onToggleWatchedVideo,
+  onSelectModuleVideo,
   onRecordAnswer,
+  onClearAnswer,
   onBackToPlan,
 }: StudyStudioViewProps) {
-  const [activeTab, setActiveTab] = useState<StudioTab>('videos');
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
   const [isTheaterMode, setIsTheaterMode] = useState(false);
+  const [formulaDrawerOpen, setFormulaDrawerOpen] = useState(false);
+  const [railQuery, setRailQuery] = useState('');
   const [revealedStepsByExample, setRevealedStepsByExample] = useState<Record<string, number>>({});
   const [shownHints, setShownHints] = useState<Record<string, boolean>>({});
+  const activeTabBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // Reset per-module interactive state when switching days
+  // Reset per-module scratch state when switching modules
   useEffect(() => {
-    setActiveTab('videos');
     setRevealedStepsByExample({});
     setShownHints({});
     setMobileRailOpen(false);
   }, [activeModule.id]);
 
-  const completedSet = new Set(progress.completedModuleIds);
-  const watchedSet = new Set(progress.watchedVideoIds);
+  // Keep active Studio tab scrolled into view on narrow mobile screens
+  useEffect(() => {
+    activeTabBtnRef.current?.scrollIntoView({
+      inline: 'center',
+      block: 'nearest',
+      behavior: 'smooth',
+    });
+  }, [activeTab]);
+
+  const completedSet = useMemo(
+    () => new Set(progress.completedModuleIds),
+    [progress.completedModuleIds]
+  );
+  const watchedSet = useMemo(
+    () => new Set(progress.watchedVideoIds),
+    [progress.watchedVideoIds]
+  );
+
   const isCompleted = completedSet.has(activeModule.id);
   const currentIndex = modules.findIndex((m) => m.id === activeModule.id);
   const prevModule = currentIndex > 0 ? modules[currentIndex - 1] : null;
   const nextModule = currentIndex < modules.length - 1 ? modules[currentIndex + 1] : null;
 
-  const scheduleSlot = getModuleScheduleSlot(
-    activeModule.dayNumber,
-    progress.paceId,
-    progress.startDateIso
-  );
+  const isPreAlg = activeModule.course === 'prealg';
+  const activeLabel = formatModuleShortLabel(activeModule);
+  const activePrefix = formatModuleNumberPrefix(activeModule);
+  const activeTabNumber = STUDIO_TABS.findIndex((t) => t.id === activeTab) + 1;
+
+  // Map active module to its schedule slot in the user's selected starting track
+  const scheduleSlot = useMemo(() => {
+    const trackMods = getModulesForStartingTrack(modules, progress.startingTrack);
+    const idx = trackMods.findIndex((m) => m.id === activeModule.id);
+    if (idx === -1) return null;
+    return getModuleScheduleSlot(idx + 1, progress.paceId, progress.startDateIso);
+  }, [modules, progress.startingTrack, progress.paceId, progress.startDateIso, activeModule.id]);
 
   const mediaBundle = MODULE_MEDIA_MAP[activeModule.id] ?? {
     videos: [],
     externalResources: [],
   };
   const textbookSections =
-    TEXTBOOK_CALC1[activeModule.id] ?? TEXTBOOK_CALC2[activeModule.id] ?? [];
+    TEXTBOOK_PREALG[activeModule.id] ??
+    TEXTBOOK_CALC1[activeModule.id] ??
+    TEXTBOOK_CALC2[activeModule.id] ??
+    [];
 
   const watchedInModule = mediaBundle.videos.filter((v) => watchedSet.has(v.id)).length;
-
   const solvedCorrectInModule = activeModule.practiceProblems.filter(
     (p) => progress.solvedProblemIds[p.id]?.isCorrect
   ).length;
 
+  const normalizedRailQuery = railQuery.trim().toLowerCase();
+
   const syllabusContent = (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -110,12 +156,43 @@ export function StudyStudioView({
         </span>
       </div>
 
-      {(['calc1', 'calc2'] as const).map((courseKey) => {
-        const courseMods = modules.filter((m) => m.course === courseKey);
+      {/* Quick Syllabus Search */}
+      <div className="relative">
+        <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <label htmlFor="rail-module-search" className="sr-only">
+          Filter syllabus modules
+        </label>
+        <input
+          id="rail-module-search"
+          type="search"
+          value={railQuery}
+          onChange={(e) => setRailQuery(e.target.value)}
+          placeholder="Jump to topic..."
+          className="w-full pl-8 pr-2.5 py-1.5 text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-[#0F172A] placeholder:text-[#94A3B8]"
+        />
+      </div>
+
+      {(['prealg', 'calc1', 'calc2'] as const).map((courseKey) => {
+        const courseMods = modules.filter((m) => {
+          if (m.course !== courseKey) return false;
+          if (!normalizedRailQuery) return true;
+          return (
+            m.title.toLowerCase().includes(normalizedRailQuery) ||
+            m.keyTopics.some((t) => t.toLowerCase().includes(normalizedRailQuery)) ||
+            formatModuleShortLabel(m).toLowerCase().includes(normalizedRailQuery)
+          );
+        });
+        if (courseMods.length === 0) return null;
+        const groupTitle =
+          courseKey === 'prealg'
+            ? 'Pre-Algebra Prep (P1–P6)'
+            : courseKey === 'calc1'
+              ? 'Calculus I (Days 1–5)'
+              : 'Calculus II (Days 6–14)';
         return (
           <div key={courseKey} className="space-y-1.5">
             <div className="text-xs font-semibold text-[#64748B] px-2 pb-1 border-b border-[#E2E8F0]">
-              {courseKey === 'calc1' ? 'Calculus I (Days 1–5)' : 'Calculus II (Days 6–14)'}
+              {groupTitle}
             </div>
             <ul className="space-y-0.5">
               {courseMods.map((mod) => {
@@ -142,7 +219,7 @@ export function StudyStudioView({
                       )}
                       <span className="min-w-0 flex-1 leading-snug">
                         <span className="font-mono-tabular mr-1">
-                          D{mod.dayNumber}
+                          {mod.course === 'prealg' ? `P${mod.dayNumber}` : `D${mod.dayNumber}`}
                         </span>
                         {mod.title}
                       </span>
@@ -164,29 +241,49 @@ export function StudyStudioView({
 
   return (
     <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 py-5 lg:py-6">
-      {/* Mobile Syllabus Drawer Trigger */}
-      <div className="lg:hidden mb-4 flex items-center justify-between gap-3">
+      {/* Slide-Over Formula Sheet Drawer (zero context loss while studying) */}
+      <FormulaDrawer
+        open={formulaDrawerOpen}
+        activeCourse={activeModule.course}
+        onClose={() => setFormulaDrawerOpen(false)}
+      />
+
+      {/* Mobile Syllabus Drawer & Quick Formula Trigger */}
+      <div className="lg:hidden mb-4 flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => setMobileRailOpen((o) => !o)}
           aria-expanded={mobileRailOpen}
-          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-[#0F172A] bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#0F172A] bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg whitespace-nowrap shrink-0 cursor-pointer"
         >
-          {mobileRailOpen ? <X className="w-4 h-4" /> : <List className="w-4 h-4" />}
-          <span>{mobileRailOpen ? 'Close Syllabus' : `Syllabus (Day ${activeModule.dayNumber}/14)`}</span>
+          {mobileRailOpen ? <X className="w-4 h-4 shrink-0" /> : <List className="w-4 h-4 shrink-0" />}
+          <span>
+            {mobileRailOpen ? 'Close' : `Syllabus · ${activeLabel}`}
+          </span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => onToggleComplete(activeModule.id)}
-          className={`px-3 py-2 text-xs font-semibold rounded-lg border cursor-pointer ${
-            isCompleted
-              ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
-              : 'bg-[#FFFFFF] border-[#CBD5E1] text-[#334155]'
-          }`}
-        >
-          {isCompleted ? 'Completed' : 'Mark Complete'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setFormulaDrawerOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#1D4ED8] bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg cursor-pointer"
+          >
+            <BookMarked className="w-3.5 h-3.5" />
+            <span>Formulas</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onToggleComplete(activeModule.id)}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg border cursor-pointer ${
+              isCompleted
+                ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                : 'bg-[#FFFFFF] border-[#CBD5E1] text-[#334155]'
+            }`}
+          >
+            {isCompleted ? 'Done' : 'Complete'}
+          </button>
+        </div>
       </div>
 
       {mobileRailOpen && (
@@ -213,11 +310,13 @@ export function StudyStudioView({
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div className="space-y-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B] font-mono-tabular">
-                  <span className="font-semibold text-[#1D4ED8]">
-                    {scheduleSlot.scheduleDayLabel}
-                  </span>
+                  <span className="font-semibold text-[#1D4ED8]">{activeLabel}</span>
                   <span aria-hidden="true">·</span>
-                  <span>{scheduleSlot.formattedDate}</span>
+                  <span>
+                    {scheduleSlot
+                      ? `${scheduleSlot.formattedDate} (${scheduleSlot.scheduleDayLabel})`
+                      : 'Optional Foundation'}
+                  </span>
                   <span aria-hidden="true">·</span>
                   <span className="font-sans">{activeModule.phase}</span>
                   <span aria-hidden="true">·</span>
@@ -227,7 +326,7 @@ export function StudyStudioView({
                 </div>
 
                 <h1 className="font-display text-2xl sm:text-[1.75rem] font-semibold text-[#0F172A] leading-tight text-balance">
-                  {String(activeModule.dayNumber).padStart(2, '0')}. {activeModule.title}
+                  {activePrefix}. {activeModule.title}
                 </h1>
 
                 <p className="text-sm text-[#475569] leading-relaxed max-w-4xl">
@@ -236,6 +335,15 @@ export function StudyStudioView({
               </div>
 
               <div className="hidden lg:flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setFormulaDrawerOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#1D4ED8] hover:text-white bg-[#EFF6FF] hover:bg-[#1D4ED8] border border-[#BFDBFE] hover:border-[#1D4ED8] rounded-lg whitespace-nowrap cursor-pointer transition-colors"
+                >
+                  <BookMarked className="w-4 h-4" />
+                  <span>Formula Sheet</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setIsTheaterMode((prev) => !prev)}
@@ -276,66 +384,82 @@ export function StudyStudioView({
               </div>
             </div>
 
-            {/* 5-Stage Studio Sub-Navigation */}
-            <div
-              role="tablist"
-              aria-label="Lesson learning stages"
-              className="pt-2 border-t border-[#E2E8F0] flex flex-nowrap sm:flex-wrap items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0"
-            >
-              {STUDIO_TABS.map((tab) => {
-                const selected = activeTab === tab.id;
-                let badgeText = '';
-                if (tab.id === 'videos' && mediaBundle.videos.length > 0) {
-                  badgeText = ` (${watchedInModule}/${mediaBundle.videos.length})`;
-                } else if (tab.id === 'practice') {
-                  badgeText = ` (${solvedCorrectInModule}/${activeModule.practiceProblems.length})`;
-                }
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={selected}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`px-3.5 py-2 text-xs font-semibold rounded-lg whitespace-nowrap shrink-0 cursor-pointer ${
-                      selected
-                        ? 'bg-[#1D4ED8] text-white'
-                        : 'bg-[#F1F5F9] text-[#475569] hover:text-[#0F172A] hover:bg-[#E2E8F0]'
-                    }`}
-                  >
-                    {tab.label}
-                    {badgeText}
-                  </button>
-                );
-              })}
+            {/* 5-Stage Studio Sub-Navigation with Mobile Scroll Cue */}
+            <div className="pt-2 border-t border-[#E2E8F0] space-y-1.5">
+              <div className="sm:hidden flex items-center justify-between text-[11px] text-[#64748B] font-mono-tabular">
+                <span>Stage {activeTabNumber} of {STUDIO_TABS.length}</span>
+                <span>Swipe tabs →</span>
+              </div>
+              <div className="relative">
+                <div
+                  role="tablist"
+                  aria-label="Lesson learning stages"
+                  className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pr-6 sm:pr-0"
+                >
+                  {STUDIO_TABS.map((tab) => {
+                    const selected = activeTab === tab.id;
+                    let badgeText = '';
+                    if (tab.id === 'videos' && mediaBundle.videos.length > 0) {
+                      badgeText = ` (${watchedInModule}/${mediaBundle.videos.length})`;
+                    } else if (tab.id === 'practice') {
+                      badgeText = ` (${solvedCorrectInModule}/${activeModule.practiceProblems.length})`;
+                    }
+                    return (
+                      <button
+                        key={tab.id}
+                        ref={selected ? activeTabBtnRef : null}
+                        type="button"
+                        role="tab"
+                        aria-selected={selected}
+                        onClick={() => onChangeTab(tab.id)}
+                        className={`px-3.5 py-2 text-xs font-semibold rounded-lg whitespace-nowrap shrink-0 cursor-pointer ${
+                          selected
+                            ? 'bg-[#1D4ED8] text-white'
+                            : 'bg-[#F1F5F9] text-[#475569] hover:text-[#0F172A] hover:bg-[#E2E8F0]'
+                        }`}
+                      >
+                        {tab.label}
+                        {badgeText}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="sm:hidden pointer-events-none absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-[#FFFFFF] to-transparent"
+                />
+              </div>
             </div>
           </div>
 
-          {/* TAB 1: Embedded Professor Leonard Video Course & Curated Web References */}
-          {activeTab === 'videos' && (
+          {/* TAB 1: Embedded Video Course — Kept Mounted via CSS so switching tabs NEVER kills/resets video playback */}
+          <div className={activeTab === 'videos' ? '' : 'hidden'}>
             <VideoCourseTheater
-              moduleDayNumber={activeModule.dayNumber}
+              moduleLabel={activeLabel}
               videos={mediaBundle.videos}
               externalResources={mediaBundle.externalResources}
               watchedVideoIds={progress.watchedVideoIds}
+              savedVideoId={progress.lastVideoByModule[activeModule.id]}
               isTheaterMode={isTheaterMode}
+              onSelectVideoId={(videoId) => onSelectModuleVideo(activeModule.id, videoId)}
               onToggleTheaterMode={() => setIsTheaterMode((prev) => !prev)}
               onToggleWatchedVideo={onToggleWatchedVideo}
-              onProceedToTextbook={() => setActiveTab('theory')}
+              onProceedToTextbook={() => onChangeTab('theory')}
             />
-          )}
+          </div>
 
           {/* TAB 2: Complete University Textbook Chapter, Formal Theorems & Exam Traps */}
           {activeTab === 'theory' && (
             <div className="space-y-6">
-              {/* Full Multi-Section University Textbook Notes */}
               {textbookSections.length > 0 && (
                 <section className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 space-y-6">
                   <div className="pb-4 border-b border-[#E2E8F0] space-y-3">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <div>
                         <div className="text-xs font-medium text-[#1D4ED8]">
-                          Chapter {activeModule.dayNumber} · Complete University Lecture Notes
+                          {isPreAlg
+                            ? `Foundation ${activeLabel} · OpenStax Precalculus 2e Notes`
+                            : `Chapter ${activeModule.dayNumber} · Complete University Lecture Notes`}
                         </div>
                         <h2 className="font-display text-2xl font-semibold text-[#0F172A] mt-1">
                           {activeModule.title}
@@ -356,15 +480,39 @@ export function StudyStudioView({
                         <a
                           key={sIdx}
                           href={`#tb-sec-${sIdx}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            document
+                              .getElementById(`tb-sec-${sIdx}`)
+                              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }}
                           className="text-[#1D4ED8] hover:underline font-medium"
                         >
                           {sec.heading.split(':')[0]}
                         </a>
                       ))}
-                      <a href="#tb-theorems" className="text-[#1D4ED8] hover:underline font-medium">
+                      <a
+                        href="#tb-theorems"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document
+                            .getElementById('tb-theorems')
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        className="text-[#1D4ED8] hover:underline font-medium"
+                      >
                         Core Theorems
                       </a>
-                      <a href="#tb-traps" className="text-[#1D4ED8] hover:underline font-medium">
+                      <a
+                        href="#tb-traps"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document
+                            .getElementById('tb-traps')
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        className="text-[#1D4ED8] hover:underline font-medium"
+                      >
                         Exam Traps
                       </a>
                     </nav>
@@ -475,9 +623,7 @@ export function StudyStudioView({
                 <div className="divide-y divide-[#E2E8F0]">
                   {activeModule.commonTraps.map((item, idx) => (
                     <div key={idx} className="py-3.5 first:pt-0 last:pb-0 space-y-1.5 text-sm">
-                      <p className="text-[#991B1B] font-medium">
-                        Trap: {item.trap}
-                      </p>
+                      <p className="text-[#991B1B] font-medium">Trap: {item.trap}</p>
                       <p className="text-[#334155]">
                         <strong className="font-semibold text-[#059669]">Fix: </strong>
                         {item.fix}
@@ -510,6 +656,17 @@ export function StudyStudioView({
                         <div className="space-y-0.5 min-w-0">
                           <div className="text-xs font-medium text-[#1D4ED8]">
                             {res.provider}
+                            {res.resourceKind && (
+                              <span className="text-[#64748B]">
+                                {' '}
+                                ·{' '}
+                                {res.resourceKind === 'theory'
+                                  ? 'Textbook Theory'
+                                  : res.resourceKind === 'exercises'
+                                    ? 'Practice Exercises'
+                                    : 'Full Playlist'}
+                              </span>
+                            )}
                           </div>
                           <div className="text-sm font-semibold text-[#0F172A] group-hover:text-[#1D4ED8]">
                             {res.title}
@@ -531,7 +688,7 @@ export function StudyStudioView({
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('lab')}
+                  onClick={() => onChangeTab('lab')}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg cursor-pointer"
                 >
                   <span>Proceed to Interactive Lab</span>
@@ -553,7 +710,7 @@ export function StudyStudioView({
               <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-display text-lg font-semibold text-[#0F172A]">
-                    Day {activeModule.dayNumber} Rapid Mastery Checklist
+                    {activeLabel} Rapid Mastery Checklist
                   </h3>
                   <span className="text-xs text-[#64748B]">
                     Prerequisites: {activeModule.prerequisites.join(' · ')}
@@ -572,7 +729,7 @@ export function StudyStudioView({
                 <div className="pt-2 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => setActiveTab('examples')}
+                    onClick={() => onChangeTab('examples')}
                     className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg cursor-pointer"
                   >
                     <span>Proceed to Worked Examples</span>
@@ -583,7 +740,7 @@ export function StudyStudioView({
             </div>
           )}
 
-          {/* TAB 3: Step-by-Step Interactive Worked Examples */}
+          {/* TAB 4: Step-by-Step Interactive Worked Examples */}
           {activeTab === 'examples' && (
             <div className="space-y-6">
               {activeModule.workedExamples.map((ex) => {
@@ -677,7 +834,7 @@ export function StudyStudioView({
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('practice')}
+                  onClick={() => onChangeTab('practice')}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg cursor-pointer"
                 >
                   <span>Start Mastery Check ({activeModule.practiceProblems.length} Problems)</span>
@@ -687,7 +844,7 @@ export function StudyStudioView({
             </div>
           )}
 
-          {/* TAB 4: Graded Mastery Check */}
+          {/* TAB 5: Graded Mastery Check (Locked once answered, explicit Retry Problem button) */}
           {activeTab === 'practice' && (
             <div className="space-y-6">
               {activeModule.practiceProblems.map((prob, idx) => {
@@ -705,13 +862,23 @@ export function StudyStudioView({
                         {prob.topicTag} · {prob.difficulty}
                       </span>
                       {record && (
-                        <span
-                          className={`font-semibold ${
-                            record.isCorrect ? 'text-[#059669]' : 'text-[#DC2626]'
-                          }`}
-                        >
-                          {record.isCorrect ? 'Verified Correct' : 'Needs Review'}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`font-semibold ${
+                              record.isCorrect ? 'text-[#059669]' : 'text-[#DC2626]'
+                            }`}
+                          >
+                            {record.isCorrect ? 'Verified Correct' : 'Needs Review'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => onClearAnswer(prob.id)}
+                            className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium cursor-pointer"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            <span>Retry</span>
+                          </button>
+                        </div>
                       )}
                     </div>
 
@@ -726,14 +893,14 @@ export function StudyStudioView({
                         const isPicked = record?.selectedOptionId === opt.id;
                         const isRightOption = opt.id === prob.correctOptionId;
                         let cls =
-                          'bg-[#FFFFFF] border-[#CBD5E1] text-[#0F172A] hover:border-[#1D4ED8]';
+                          'bg-[#FFFFFF] border-[#CBD5E1] text-[#0F172A] hover:border-[#1D4ED8] cursor-pointer';
                         if (record) {
                           if (isRightOption) {
-                            cls = 'bg-[#ECFDF5] border-[#059669] text-[#065F46]';
+                            cls = 'bg-[#ECFDF5] border-[#059669] text-[#065F46] cursor-default';
                           } else if (isPicked && !isRightOption) {
-                            cls = 'bg-[#FEF2F2] border-[#DC2626] text-[#991B1B]';
+                            cls = 'bg-[#FEF2F2] border-[#DC2626] text-[#991B1B] cursor-default';
                           } else {
-                            cls = 'bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B]';
+                            cls = 'bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] cursor-default';
                           }
                         }
 
@@ -741,10 +908,11 @@ export function StudyStudioView({
                           <button
                             key={opt.id}
                             type="button"
+                            disabled={Boolean(record)}
                             onClick={() =>
                               onRecordAnswer(prob.id, opt.id, opt.id === prob.correctOptionId)
                             }
-                            className={`px-4 py-3 rounded-lg border text-left flex items-center gap-3 transition-colors cursor-pointer ${cls}`}
+                            className={`px-4 py-3 rounded-lg border text-left flex items-center gap-3 transition-colors ${cls}`}
                           >
                             <span className="font-mono-tabular text-xs font-semibold uppercase shrink-0">
                               {opt.id}.
@@ -804,7 +972,7 @@ export function StudyStudioView({
             </div>
           )}
 
-          {/* Bottom Day-to-Day Progression Bar */}
+          {/* Bottom Day-to-Day Progression Bar — Navigation NEVER auto-marks lessons complete */}
           <nav
             aria-label="Lesson progression"
             className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-4 sm:px-6 flex flex-wrap items-center justify-between gap-4"
@@ -816,36 +984,37 @@ export function StudyStudioView({
                 className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-[#334155] hover:text-[#0F172A] bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Day {prevModule.dayNumber}</span>
+                <span>Prev: {formatModuleShortLabel(prevModule)}</span>
               </button>
             ) : (
               <div />
             )}
 
-            <div className="flex items-center gap-3">
-              {!isCompleted && (
-                <button
-                  type="button"
-                  onClick={() => onToggleComplete(activeModule.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#065F46] bg-[#ECFDF5] hover:bg-[#D1FAE5] border border-[#A7F3D0] rounded-lg cursor-pointer"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Mark Day {activeModule.dayNumber} Complete</span>
-                </button>
-              )}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onToggleComplete(activeModule.id)}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg border cursor-pointer ${
+                  isCompleted
+                    ? 'text-[#065F46] bg-[#ECFDF5] border-[#059669]'
+                    : 'text-[#065F46] bg-[#ECFDF5] hover:bg-[#D1FAE5] border-[#A7F3D0]'
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>
+                  {isCompleted
+                    ? `${activeLabel} Completed`
+                    : `Mark ${activeLabel} Complete`}
+                </span>
+              </button>
 
               {nextModule && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (!isCompleted) onToggleComplete(activeModule.id);
-                    onSelectModule(nextModule.id);
-                  }}
+                  onClick={() => onSelectModule(nextModule.id)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg cursor-pointer"
                 >
-                  <span>
-                    Next: Day {nextModule.dayNumber}
-                  </span>
+                  <span>Next: {formatModuleShortLabel(nextModule)}</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}

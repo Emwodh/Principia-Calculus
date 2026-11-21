@@ -1,24 +1,35 @@
 # Principia Calculus
 
-An all-in-one, accelerated university-level **Calculus I & II** learning platform designed to take learners from limits to Taylor series and polar geometry in the shortest possible time—without needing to bounce between scattered tabs, textbooks, and playlists.
+An all-in-one, accelerated university-level **Pre-Algebra, Precalculus & Calculus I–II** learning platform designed to take learners from foundational functions and trigonometry through limits, integration, Taylor series, and polar geometry in the shortest possible time—without bouncing between scattered tabs, textbooks, and playlists.
 
 ## Key Features
 
-- **14-Module Two-Semester Curriculum**: Distills full university Calculus I (Days 1–5) and Calculus II (Days 6–14) into structured daily modules with a clear 5-stage workflow:
-  1. **Video Lectures** — Full-width 16:9 cinema player with collapsible syllabus **Theater Mode**, **47 embedded lectures** from Professor Leonard's official Calculus 1 & 2 playlists plus 3Blue1Brown visual companions, lecture focus guides, fastest-path watch strategies, transport controls (`Prev` / `Next` / `Mark Watched & Next Lecture`), and persistent watched tracking.
-  2. **Full Textbook & Theory** — Multi-section university lecture notes for every day with KaTeX-typeset equations, quick in-chapter jump links, formal theorems, exam shortcuts, and high-frequency exam traps.
-  3. **Interactive Mathematical Labs** — 14 custom SVG visual labs with live sliders for limits, secant-to-tangent convergence, extrema/concavity, Riemann sums, volumes of revolution, integration by parts, trig substitution, improper $p$-integrals, Euler's ODE method, infinite series partial sums, alternating series error bounds, Taylor polynomial approximations, polar curves, and exam triage.
+- **20-Module Three-Track Curriculum**: Combines an optional **Pre-Algebra & Precalculus Prep** warmup (Prep 1–6) with full university **Calculus I** (Days 1–5) and **Calculus II** (Days 6–14), each structured into a 5-stage workflow:
+  1. **Video Lectures** — Full-width 16:9 cinema player with collapsible syllabus **Theater Mode**, **80 embedded lectures** from Professor Leonard's official Precalculus / College Algebra, Calculus 1, and Calculus 2 playlists plus 3Blue1Brown visual companions, lecture focus guides, fastest-path watch strategies, transport controls (`Prev` / `Next` / `Mark Watched & Next Lecture`), and persistent watched tracking.
+  2. **Full Textbook & Theory** — Multi-section university lecture notes aligned to OpenStax Precalculus 2e and OpenStax Calculus Volumes 1–2 for every module, with KaTeX-typeset equations, quick in-chapter jump links, formal theorems, exam shortcuts, and high-frequency exam traps.
+  3. **Interactive Mathematical Labs** — 14 custom SVG visual simulations with live sliders for limits & asymptotes, secant-to-tangent convergence, extrema/concavity, Riemann sums, volumes of revolution, integration by parts, trig substitution, improper $p$-integrals, Euler's ODE method, infinite series partial sums, alternating series error bounds, Taylor polynomial approximations, polar curves, and exam triage.
   4. **Worked Examples** — Step-by-step interactive derivations revealed one algebraic move at a time.
-  5. **Mastery Check** — 42 graded university-level problems with hints, instant grading, and full LaTeX proofs.
-- **Adaptive Compression Scheduler**: Switch between **7-Day Exam Cram**, **14-Day Sprint**, and **28-Day Mastery** paces with a custom start date; every syllabus date and daily hour commitment updates live.
-- **Timed Drill Exams**: 5 assessment templates (Diagnostic, Calculus I Midterm, Integration Blitz, Series Blitz, Full Final Gauntlet) featuring countdown timers, progress tracking, keyboard shortcuts (`A`–`D` or `1`–`4` to answer, `←` / `→` to navigate), score history, and missed-problem derivation reviews.
-- **Searchable Formula Vault**: 39 essential Calculus I & II identities rendered in KaTeX with live category filtering, **Active Recall Mode** (click-to-reveal flashcards with progress tracking), and print-friendly layout.
-- **Curated Open-Access References**: Direct chapter-aligned links to **Paul's Online Math Notes**, **OpenStax Calculus Volumes 1 & 2**, and **MIT OCW 18.01SC**.
+  5. **Mastery Check** — 60 graded university-level problems (18 Pre-Algebra/Precalculus, 15 Calculus I, 27 Calculus II) with hints, instant grading, and full LaTeX proofs.
+- **Adaptive Compression Scheduler**: Switch between **7-Day Exam Cram**, **14-Day Sprint**, and **28-Day Mastery** paces with a custom start date; every Calculus Day 1–14 date and daily hour commitment updates live while Prep 1–6 stays available as an optional self-paced warmup.
+- **Timed Drill Exams**: 6 assessment templates (**Pre-Algebra & Precalculus Readiness Check**, Calculus I Midterm, Integration Blitz, Series Blitz, Calculus II Final, and Full Calc I & II Gauntlet) featuring countdown timers, progress tracking, keyboard shortcuts (`A`–`D` or `1`–`4` to answer, `←` / `→` to navigate), per-track accuracy breakdowns, score history, and missed-problem derivation reviews.
+- **Searchable Formula Vault**: 49 essential Pre-Algebra, Trigonometry, and Calculus I–II identities rendered in KaTeX with live category filtering (including **Pre-Algebra & Trig**), **Active Recall Mode** (click-to-reveal flashcards with progress tracking), and print-friendly layout.
+- **Curated Open-Access References**: Direct chapter-aligned links to **OpenStax Precalculus 2e**, **Paul's Online Math Notes**, **OpenStax Calculus Volumes 1 & 2**, and **MIT OCW 18.01SC**, labeled by resource type (*Textbook Theory*, *Practice Exercises*, *Full Playlist*).
 - **Automatic Local Persistence**: Module completion, watched lectures, solved drills, exam history, and schedule pace are saved automatically in `localStorage`.
 
 ---
 
-## Complete 14-Module Syllabus
+## Complete 20-Module Syllabus
+
+### Foundation Track — Pre-Algebra & Precalculus Prep (Prep 1–6 · Optional Warmup)
+
+| Prep | Module | Paired Visual Lab |
+| --- | --- | --- |
+| P01 | Functions, Domains, Graphs & Transformations | Two-Sided Limit & Discontinuity Explorer |
+| P02 | Quadratics, Polynomials, Division & Zeros | Extrema & Concavity Analyzer |
+| P03 | Rational Functions, Asymptotes, Holes & Inequalities | Two-Sided Limit & Discontinuity Explorer |
+| P04 | Composite, Inverse, Exponential & Logarithmic Functions | Slope Field & Exponential Growth Lab |
+| P05 | Radians, The Unit Circle & Trigonometric Graphs | Polar Curve & Angle Sweeper |
+| P06 | Inverse Trig, Trig Identities, Equations & Sequences | Partial Sums $S_N$ vs. $a_n$ Lab |
 
 ### Semester I — Calculus I Core (Days 1–5)
 
@@ -101,21 +112,23 @@ src/
 ├── types/
 │   └── course.ts                 # TypeScript interfaces for modules, videos, exams & state
 ├── data/
-│   ├── curriculum.ts             # Combined 14-module catalog & exam templates
+│   ├── curriculum.ts             # Combined 20-module catalog & 6 exam templates
+│   ├── curriculumPreAlg.ts       # Pre-Algebra & Precalculus Prep 1–6 modules & drills
 │   ├── curriculumCalc1.ts        # Calculus I modules, theorems, examples & drills
 │   ├── curriculumCalc2.ts        # Calculus II modules, theorems, examples & drills
-│   ├── moduleMediaAndNotes.ts    # 47 verified YouTube lectures & open-access web references
+│   ├── moduleMediaAndNotes.ts    # 80 verified YouTube lectures & open-access web references
+│   ├── moduleTextbookPreAlg.ts   # OpenStax Precalculus 2e-aligned textbook chapters (Prep 1–6)
 │   ├── moduleTextbookCalc1.ts    # Full Calculus I university textbook chapters
 │   ├── moduleTextbookCalc2.ts    # Full Calculus II university textbook chapters
-│   └── formulas.ts               # 39-entry KaTeX Formula Vault dataset
+│   └── formulas.ts               # 49-entry KaTeX Formula Vault dataset
 ├── utils/
 │   ├── calculusMath.ts           # Pure numerical calculus routines (Simpson, Taylor, ODE, Polar)
 │   ├── calculusMath.test.ts      # Unit tests for numerical calculus engine
-│   ├── courseProgress.ts         # Adaptive scheduler, progress summaries & exam grading
+│   ├── courseProgress.ts         # Adaptive scheduler, track formatters, progress & exam grading
 │   └── courseProgress.test.ts    # Unit tests for scheduling & grading logic
 └── components/
     ├── TopBar.tsx                # 3-zone sticky navigation bar
-    ├── CoursePlanView.tsx        # Hero, metrics, pace planner & 14-module roadmap
+    ├── CoursePlanView.tsx        # Hero, metrics, pace planner & 20-module roadmap
     ├── StudyStudioView.tsx       # 5-stage learning studio with collapsible syllabus rail
     ├── VideoCourseTheater.tsx    # Full-width cinema video player, Theater Mode & queue
     ├── InteractiveLab.tsx        # 14 interactive SVG mathematical simulations
@@ -130,10 +143,10 @@ src/
 
 This platform curates and embeds freely available university mathematics resources:
 
-- **Professor Leonard** — Full-length university Calculus 1 & Calculus 2 YouTube lecture playlists
+- **Professor Leonard** — Full-length university Precalculus / College Algebra, Calculus 1, and Calculus 2 YouTube lecture playlists
 - **3Blue1Brown** — *Essence of Calculus* visual intuition companion videos
+- **OpenStax Precalculus 2e & Calculus Volumes 1–2** — Peer-reviewed open-access university textbooks
 - **Paul's Online Math Notes** (Lamar University) — Structured notes and worked problem sets
-- **OpenStax Calculus Volumes 1 & 2** — Peer-reviewed open-access university textbooks
 - **MIT OpenCourseWare 18.01SC** — Single Variable Calculus course archives
 
 ---

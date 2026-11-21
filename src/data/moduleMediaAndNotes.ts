@@ -7,10 +7,560 @@ export interface ModuleMediaBundle {
 
 /**
  * Every YouTube ID below is verified directly against Professor Leonard's official
- * Calculus 1 (PLF797E961509B4EB5) and Calculus 2 (PLDesaqWTN6EQ2J4vgsN1HyBeRADEh4Cw-)
+ * Precalculus / College Algebra & Trig (PLDesaqWTN6ESsmwELdrzhcGiRhk5DjwLP),
+ * Calculus 1 (PLF797E961509B4EB5), and Calculus 2 (PLDesaqWTN6EQ2J4vgsN1HyBeRADEh4Cw-)
  * playlists, plus 3Blue1Brown's Essence of Calculus (PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr).
  */
 export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
+  'prealg-functions': {
+    videos: [
+      {
+        id: 'vid-pa1-1',
+        youtubeId: '9OOrhA2iKak',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 01',
+        title: 'Intro to Precalculus (College Algebra 1)',
+        focusSummary:
+          'Roadmap of the algebraic and trigonometric foundations required to thrive in university Calculus I and II.',
+        watchStrategy:
+          'Watch at 1.5x to orient yourself on how functions, graphs, and trigonometry connect directly into limits and derivatives.',
+      },
+      {
+        id: 'vid-pa1-2',
+        youtubeId: 'FkUEsP9efFg',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 02',
+        title: 'Introduction to Functions (College Algebra 2)',
+        focusSummary:
+          'Rigorous definition of functions, relations, inputs/outputs, and reading function notation f(x) accurately.',
+        watchStrategy:
+          'Focus closely on algebraic substitution inside f(x + h)—this sets up difference quotients.',
+      },
+      {
+        id: 'vid-pa1-3',
+        youtubeId: 'LvUCDcp6Z3k',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 04',
+        title: 'Finding the Domain of Functions (College Algebra 4)',
+        focusSummary:
+          'Step-by-step method for finding implied domains of rational, radical, and combined functions in interval notation.',
+        watchStrategy:
+          'Pause before each radical-in-denominator example and test whether the boundary is open or closed.',
+      },
+      {
+        id: 'vid-pa1-4',
+        youtubeId: '6897XAx3O9Q',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 08',
+        title: 'Properties of Functions — Even vs Odd (College Algebra 8)',
+        focusSummary:
+          'Algebraic symmetry tests f(−x) = f(x) and f(−x) = −f(x) alongside geometric y-axis and origin symmetry.',
+        watchStrategy:
+          'Fast high-ROI lesson—symmetry shortcuts cut definite integrals in half later in Calculus I.',
+      },
+      {
+        id: 'vid-pa1-5',
+        youtubeId: 'H5Y-ONkezDM',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 11',
+        title: 'Average Rate of Change of a Function (College Algebra 11)',
+        focusSummary:
+          'Secant slope [f(b) − f(a)] / (b − a) and simplifying the difference quotient—the direct algebraic gateway to derivatives.',
+        watchStrategy:
+          'Work every difference quotient example on paper alongside Professor Leonard until canceling h feels automatic.',
+      },
+      {
+        id: 'vid-pa1-6',
+        youtubeId: 'HkrMJLSpJFI',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 15',
+        title: 'How to Graph with Transformations (College Algebra 15)',
+        focusSummary:
+          'Combining shifts, reflections, and stretches on parent functions without plotting tables of points.',
+        watchStrategy:
+          'Pay special attention to horizontal transformations—operations inside f(x) act in reverse.',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 1: Functions (Full Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/1-introduction-to-functions',
+        description:
+          'Complete university textbook theory covering function notation, domains, average rate of change, and transformations.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Function Definition & Evaluation Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/FunctionDefn.aspx',
+        description:
+          'Worked practice problems with step-by-step solutions on domains, evaluations, and difference quotients.',
+      },
+      {
+        title: 'Professor Leonard — Complete 100-Video Precalculus Playlist',
+        provider: 'Professor Leonard Playlist',
+        resourceKind: 'playlist',
+        url: 'https://www.youtube.com/playlist?list=PLDesaqWTN6ESsmwELdrzhcGiRhk5DjwLP',
+        description:
+          'Full 100-lecture Pre-Algebra / College Algebra & Trigonometry playlist on YouTube if you want every bonus walkthrough.',
+      },
+    ],
+  },
+
+  'prealg-quadratics-polys': {
+    videos: [
+      {
+        id: 'vid-pa2-1',
+        youtubeId: 'pYSYL_vy6YQ',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 19',
+        title: 'Completing the Square Made Easy (College Algebra 19)',
+        focusSummary:
+          'Converting ax² + bx + c into vertex form cleanly—essential for both quadratics and Calculus II trig-sub/arctan integrals.',
+        watchStrategy:
+          'Watch carefully when leading coefficient a ≠ 1; balancing the outside constant is the #1 exam trap.',
+      },
+      {
+        id: 'vid-pa2-2',
+        youtubeId: '2BUg_w1Cu9E',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 20',
+        title: 'Proving the Quadratic Formula — Twice (College Algebra 20)',
+        focusSummary:
+          'Derives the Quadratic Formula directly from completing the square so you never rely on rote memorization.',
+        watchStrategy:
+          'Follow the derivation once at 1.25x, then practice solving with discriminant analysis.',
+      },
+      {
+        id: 'vid-pa2-3',
+        youtubeId: 'Gxh-mEt1K-o',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 29',
+        title: 'Multiplicity and End Behavior of Polynomials (College Algebra 29)',
+        focusSummary:
+          'Leading-term end behavior plus how odd vs. even root multiplicity makes a curve cross or bounce at the x-axis.',
+        watchStrategy:
+          'Pause on the sketching summary to verify you can predict end behavior and bounces in under 10 seconds.',
+      },
+      {
+        id: 'vid-pa2-4',
+        youtubeId: 'AKJgo-WR_K4',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 32',
+        title: 'Synthetic Division and Long Division of Polynomials (College Algebra 32)',
+        focusSummary:
+          'Long division for any divisor and rapid synthetic division for linear divisors (x − c), plus missing-term 0 placeholders.',
+        watchStrategy:
+          'Crucial prerequisite for Calculus II Partial Fractions when numerator degree ≥ denominator degree.',
+      },
+      {
+        id: 'vid-pa2-5',
+        youtubeId: 'xuhk2kSVwe0',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 37',
+        title: 'Finding ALL Solutions of Polynomials (College Algebra 37)',
+        focusSummary:
+          'Combines Rational Zeros Theorem, synthetic division, and complex conjugate pairs to completely factor higher-degree polynomials.',
+        watchStrategy:
+          'Pause after Professor Leonard lists candidate rational zeros and test your own first root before resuming.',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 3: Polynomial & Rational Functions (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/3-introduction-to-polynomial-and-rational-functions',
+        description:
+          'Formal OpenStax theory on vertex form, power functions, polynomial graphs, synthetic division, and complex zeros.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Solving Quadratic Equations Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/SolveQuadraticEqnsII.aspx',
+        description:
+          'Practice problem set on completing the square and the quadratic formula with full worked solutions.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Dividing Polynomials Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/DividingPolynomials.aspx',
+        description:
+          'Targeted polynomial long division and synthetic division drills with step-by-step verification.',
+      },
+    ],
+  },
+
+  'prealg-rationals-inequalities': {
+    videos: [
+      {
+        id: 'vid-pa3-1',
+        youtubeId: 'y-bSJaEonho',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 38',
+        title: 'Finding Vertical Asymptotes of Rational Functions (College Algebra 38)',
+        focusSummary:
+          'Factoring denominators to isolate vertical asymptotes and reading infinite behavior from both sides.',
+        watchStrategy:
+          'Connects directly to infinite limits and vertical asymptotes in Calculus I Day 1.',
+      },
+      {
+        id: 'vid-pa3-2',
+        youtubeId: 'D-H9N-_Y77Y',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 40',
+        title: 'Finding a Horizontal Asymptote of a Rational Function (College Algebra 40)',
+        focusSummary:
+          'Comparing numerator and denominator degrees (n < m, n = m, n > m) to determine exact horizontal end behavior.',
+        watchStrategy:
+          'Watch at 1.25x and verify why dividing by the highest power of x produces the leading-coefficient ratio.',
+      },
+      {
+        id: 'vid-pa3-3',
+        youtubeId: 'NVhaVk4wNu8',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 41',
+        title: 'Finding an Oblique Asymptote of a Rational Function (College Algebra 41)',
+        focusSummary:
+          'Using polynomial long division whenever deg(P) = deg(Q) + 1 to extract the slant asymptote y = mx + b.',
+        watchStrategy:
+          'Notice how the remainder fraction vanishes as x → ±∞, leaving only the linear quotient.',
+      },
+      {
+        id: 'vid-pa3-4',
+        youtubeId: 'tyXWPcvSQvk',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 43',
+        title: 'Finding Asymptotes and Holes of Rational Functions (College Algebra 43)',
+        focusSummary:
+          'Complete workflow separating canceled factors (removable holes) from surviving denominator roots (vertical asymptotes).',
+        watchStrategy:
+          'Always factor numerator AND denominator first before naming any asymptote.',
+      },
+      {
+        id: 'vid-pa3-5',
+        youtubeId: 'QSh1xcbYKZk',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 47',
+        title: 'Inequalities with Rational Functions (College Algebra 47)',
+        focusSummary:
+          'Constructing clean number-line sign charts for N(x)/D(x) ≥ 0 without falling into the cross-multiplication trap.',
+        watchStrategy:
+          'Master this sign-chart method—it is identical to the First & Second Derivative Tests in Calculus I.',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Section 3.7: Rational Functions (Full Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/3-introduction-to-polynomial-and-rational-functions',
+        description:
+          'OpenStax reference covering arrow notation, removable discontinuities, and vertical/horizontal/slant asymptotes.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Graphing Rational Functions Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/GraphRationalFcns.aspx',
+        description:
+          'Full practice set on intercepts, asymptotes, holes, and sketching rational curves with worked solutions.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Complete College Algebra Exercise Bank',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/Alg.aspx',
+        description:
+          'Direct index to every algebra inequality, polynomial, and rational practice sheet.',
+      },
+    ],
+  },
+
+  'prealg-exp-log': {
+    videos: [
+      {
+        id: 'vid-pa4-1',
+        youtubeId: 'EsgHKmLSPVc',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 48',
+        title: 'Composition of Functions (College Algebra 48)',
+        focusSummary:
+          'Evaluating (f ∘ g)(x) = f(g(x)) and decomposing nested expressions into inner and outer layers.',
+        watchStrategy:
+          'Essential training for recognizing inner/outer layers in the Calculus I Chain Rule and u-Substitution.',
+      },
+      {
+        id: 'vid-pa4-2',
+        youtubeId: 'fK7IPeeZoFE',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 51',
+        title: 'Finding Inverse Functions (College Algebra 51)',
+        focusSummary:
+          'Algebraic inversion workflow (swap x and y, solve for y) plus domain/range reversal for rational and radical functions.',
+        watchStrategy:
+          'Practice the rational inverse example carefully—collecting y-terms and factoring out y is a classic exam skill.',
+      },
+      {
+        id: 'vid-pa4-3',
+        youtubeId: '2w14jBb0e9Q',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 52',
+        title: 'Graphs of Exponential Functions (College Algebra 52)',
+        focusSummary:
+          'Growth vs. decay curves bˣ, horizontal asymptote y = 0, and why natural base e sits at the center of calculus.',
+        watchStrategy:
+          'Watch at 1.5x and memorize the anchor points (0, 1) and (1, b) plus the horizontal asymptote.',
+      },
+      {
+        id: 'vid-pa4-4',
+        youtubeId: 'u0uScdsBPfk',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 58',
+        title: 'Properties of Logarithms (College Algebra 58)',
+        focusSummary:
+          'Product, quotient, and power laws of logarithms—turning multiplication and powers into simple addition and scaling.',
+        watchStrategy:
+          'Pause and verify you never split ln(a + b); log rules apply only to products, quotients, and powers.',
+      },
+      {
+        id: 'vid-pa4-5',
+        youtubeId: 'jNUyVClUQfc',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 63',
+        title: 'Solving Logarithmic Equations with Exponentials (College Algebra 63)',
+        focusSummary:
+          'Condensing logs to one term, rewriting in exponential form, and catching extraneous roots outside the log domain.',
+        watchStrategy:
+          'Never skip the final domain check—any root making a log argument ≤ 0 must be crossed out.',
+      },
+      {
+        id: 'vid-pa4-6',
+        youtubeId: 'rDcLCA2W-UI',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 64',
+        title: 'Solving Exponential Equations with Logarithms (College Algebra 64)',
+        focusSummary:
+          'Using ln on both sides to pull variables out of exponents and solve exact university-style exponential equations.',
+        watchStrategy:
+          'Practice leaving answers in exact logarithmic form (like ln 4 / 3) rather than rounded decimals.',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 4: Exponential & Logarithmic Functions (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/4-introduction-to-exponential-and-logarithmic-functions',
+        description:
+          'Complete OpenStax theory on exponential growth/decay, logarithm properties, change of base, and models.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Solving Exponential Equations Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/SolveExpEqns.aspx',
+        description:
+          'Graded practice problems with full worked solutions on common-base and logarithmic exponential equations.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Solving Logarithm Equations Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/Alg/SolveLogEqns.aspx',
+        description:
+          'Extensive practice drills on condensing logarithms and checking for extraneous roots.',
+      },
+    ],
+  },
+
+  'prealg-trig-unit-circle': {
+    videos: [
+      {
+        id: 'vid-pa5-1',
+        youtubeId: 'EWd_FtOfyPc',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 03',
+        title: 'Introduction to Radians (Precalculus — Trigonometry 3)',
+        focusSummary:
+          'Geometric meaning of radian measure, why π = 180°, and thinking natively in fractions of π.',
+        watchStrategy:
+          'Internalize π/6 = 30°, π/4 = 45°, π/3 = 60°, π/2 = 90°—every calculus formula assumes radians.',
+      },
+      {
+        id: 'vid-pa5-2',
+        youtubeId: '__nefjOhVks',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 06',
+        title: 'Trigonometric Functions and the Unit Circle (Trigonometry 6)',
+        focusSummary:
+          'Building the entire unit circle from 30-60-90 and 45-45-90 triangles and defining all six trig functions from (x, y).',
+        watchStrategy:
+          'Sketch Quadrant I once alongside Professor Leonard—understanding the geometry beats memorizing 16 points blindly.',
+      },
+      {
+        id: 'vid-pa5-3',
+        youtubeId: 'GdRZfemxTFI',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 07',
+        title: 'How to Use the Unit Circle in Trigonometry (Trigonometry 7)',
+        focusSummary:
+          'Rapid exact evaluation of sin, cos, tan, sec, csc, cot at negative angles, large angles, and all four quadrants.',
+        watchStrategy:
+          'Pause before each evaluation and call out the quadrant sign and exact value in under 5 seconds.',
+      },
+      {
+        id: 'vid-pa5-4',
+        youtubeId: '3HHgZopzL_s',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 11',
+        title: 'The Graphs of Sine and Cosine (Trigonometry 11)',
+        focusSummary:
+          'Unwrapping the unit circle into periodic sine and cosine waves with amplitude, period 2π/|B|, and key quarter-points.',
+        watchStrategy:
+          'Watch at 1.25x and pay attention to how even/odd symmetry shows up visually at x = 0.',
+      },
+      {
+        id: 'vid-pa5-5',
+        youtubeId: '8eMEBrPYJ0I',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 13',
+        title: 'How to Graph Tangent and Cotangent (Trigonometry 13)',
+        focusSummary:
+          'Period π behavior and exact vertical asymptote locations of tan(x) and cot(x)—crucial for limits and arctan.',
+        watchStrategy:
+          'Note tan(x) → +∞ as x → (π/2)⁻ and −∞ as x → (−π/2)⁺; this directly determines arctan’s horizontal asymptotes.',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Chapters 5 & 6: Unit Circle & Periodic Graphs (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/5-introduction-to-trigonometric-functions',
+        description:
+          'OpenStax theory on radian measure, unit circle coordinates, right-triangle trig, and wave transformations.',
+      },
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 6: Periodic Functions (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/6-introduction-to-periodic-functions',
+        description:
+          'Detailed graphing guide for sine, cosine, tangent, secant, cosecant, and inverse trigonometric curves.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Trig Functions Evaluation Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/CalcI/TrigFcns.aspx',
+        description:
+          'Calculator-free exact trig evaluation drills tailored specifically for incoming Calculus I students.',
+      },
+    ],
+  },
+
+  'prealg-trig-identities-series': {
+    videos: [
+      {
+        id: 'vid-pa6-1',
+        youtubeId: 'ih01YszlraY',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 17',
+        title: 'Introduction to Inverse Trigonometric Functions (Trigonometry 17)',
+        focusSummary:
+          'Why sin, cos, and tan domains must be restricted and how arcsin, arccos, and arctan principal ranges work.',
+        watchStrategy:
+          'Memorize all three principal ranges cold—arctan’s (−π/2, π/2) range reappears constantly in Calc I & II.',
+      },
+      {
+        id: 'vid-pa6-2',
+        youtubeId: 'hBk7OnEYPcw',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 22',
+        title: 'How to Solve Trigonometric Equations (Trigonometry 22)',
+        focusSummary:
+          'Factoring trig quadratics, using Pythagorean swaps, and finding all solutions on [0, 2π) for multiple angles like 2x.',
+        watchStrategy:
+          'Watch carefully how Professor Leonard never divides by sin(x) or cos(x) so zero solutions are never lost.',
+      },
+      {
+        id: 'vid-pa6-3',
+        youtubeId: 'az_veh1FLbo',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 24',
+        title: 'How to Prove Trigonometric Identities (Trigonometry 24)',
+        focusSummary:
+          'Strategic identity manipulation: working one side, converting to sine/cosine, common denominators, and conjugates.',
+        watchStrategy:
+          'This algebraic fluency makes Calculus II trigonometric integrals dramatically faster.',
+      },
+      {
+        id: 'vid-pa6-4',
+        youtubeId: '9R5Nz1eYddM',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 25',
+        title: 'Introduction to Sum and Difference Formulas (Trigonometry 25)',
+        focusSummary:
+          'Deriving and applying sin(α ± β) and cos(α ± β)—the parent formulas behind double-angle and half-angle identities.',
+        watchStrategy:
+          'Notice the sign flip in cos(α + β) = cos α cos β − sin α sin β.',
+      },
+      {
+        id: 'vid-pa6-5',
+        youtubeId: 'Epa2mi8hzBA',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Trig 27',
+        title: 'Proving the Double and Half Angle Formulas (Trigonometry 27)',
+        focusSummary:
+          'Proof of sin(2θ), cos(2θ), and the power-reducing formulas sin²θ = (1 − cos 2θ)/2 and cos²θ = (1 + cos 2θ)/2.',
+        watchStrategy:
+          'Highest-ROI trig video for Calculus II—power reduction is mandatory for integrating even powers of sine and cosine.',
+      },
+      {
+        id: 'vid-pa6-6',
+        youtubeId: 'Ipz9xXeoaRc',
+        instructor: 'Professor Leonard',
+        lectureCode: 'Pre-Algebra · Video 68',
+        title: 'Introduction to Series and Summation Notation (College Algebra 68)',
+        focusSummary:
+          'Reading and expanding sigma notation Σ, index shifts, and connecting finite sums to infinite series.',
+        watchStrategy:
+          'Direct bridge into Calculus I Riemann Sums (Day 4) and Calculus II Infinite Series (Day 10).',
+      },
+    ],
+    externalResources: [
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 7: Trig Identities & Equations (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/7-introduction-to-trigonometric-identities-and-equations',
+        description:
+          'Complete OpenStax derivations of Pythagorean, sum/difference, double-angle, half-angle identities, and trig equations.',
+      },
+      {
+        title: 'OpenStax Precalculus 2e — Chapter 11: Sequences & Series Foundations (Theory)',
+        provider: 'OpenStax Precalculus 2e',
+        resourceKind: 'theory',
+        url: 'https://openstax.org/books/precalculus-2e/pages/11-introduction-to-sequences-probability-and-counting-theory',
+        description:
+          'Theory of arithmetic/geometric sequences, sigma notation, and finite/infinite geometric sums.',
+      },
+      {
+        title: 'Paul’s Online Math Notes — Solving Trig Equations Exercises',
+        provider: "Paul's Online Math Notes",
+        resourceKind: 'exercises',
+        url: 'https://tutorial.math.lamar.edu/Problems/CalcI/TrigEquations.aspx',
+        description:
+          'Practice problem set on solving trig equations on [0, 2π) and general intervals with full solutions.',
+      },
+    ],
+  },
+
   'calc1-limits': {
     videos: [
       {

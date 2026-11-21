@@ -1,4 +1,6 @@
-export type CourseTrack = 'calc1' | 'calc2';
+export type CourseTrack = 'prealg' | 'calc1' | 'calc2';
+
+export type StartingTrack = 'full' | 'calc1' | 'calc2';
 
 export type NavView = 'plan' | 'studio' | 'exam' | 'formulas';
 
@@ -7,6 +9,11 @@ export type StudioTab = 'videos' | 'theory' | 'lab' | 'examples' | 'practice';
 export type PaceId = 'cram7' | 'sprint14' | 'standard28';
 
 export type LabType =
+  | 'prealg-functions'
+  | 'prealg-quadratics'
+  | 'prealg-rationals'
+  | 'prealg-exp-log'
+  | 'prealg-unit-circle'
   | 'limit'
   | 'derivative'
   | 'extrema'
@@ -30,6 +37,7 @@ export interface VideoLecture {
   title: string;
   focusSummary: string;
   watchStrategy: string;
+  durationMinutes?: number;
 }
 
 export interface TextbookSection {
@@ -42,7 +50,13 @@ export interface TextbookSection {
 
 export interface ExternalResource {
   title: string;
-  provider: "Paul's Online Math Notes" | 'OpenStax Calculus' | 'MIT OCW 18.01SC' | 'Professor Leonard Playlist';
+  provider:
+    | "Paul's Online Math Notes"
+    | 'OpenStax Calculus'
+    | 'OpenStax Precalculus 2e'
+    | 'MIT OCW 18.01SC'
+    | 'Professor Leonard Playlist';
+  resourceKind?: 'theory' | 'exercises' | 'playlist';
   url: string;
   description: string;
 }
@@ -117,6 +131,7 @@ export interface CourseModule {
 export interface FormulaEntry {
   id: string;
   category:
+    | 'Pre-Algebra & Trig'
     | 'Limits & Continuity'
     | 'Derivatives'
     | 'Integrals'
@@ -154,9 +169,11 @@ export interface ExamAttemptRecord {
 
 export interface UserProgressState {
   paceId: PaceId;
+  startingTrack: StartingTrack;
   startDateIso: string;
   completedModuleIds: string[];
   watchedVideoIds: string[];
+  lastVideoByModule: Record<string, string>;
   solvedProblemIds: Record<string, { selectedOptionId: string; isCorrect: boolean }>;
   examHistory: ExamAttemptRecord[];
   activeModuleId: string;

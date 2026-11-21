@@ -6,13 +6,18 @@ import type {
   ExamTemplate,
   PracticeProblem,
 } from '../types/course';
-import { gradeExamSubmission, type ExamGradeReport } from '../utils/courseProgress';
+import {
+  formatCourseTrackName,
+  gradeExamSubmission,
+  type ExamGradeReport,
+} from '../utils/courseProgress';
 import { MathTex } from './MathTex';
 
 interface DrillExamViewProps {
   examHistory: ExamAttemptRecord[];
   onSaveExamAttempt: (record: ExamAttemptRecord) => void;
   onJumpToModule: (moduleId: string) => void;
+  onExamActiveChange?: (isActive: boolean) => void;
 }
 
 function formatClock(totalSeconds: number): string {
@@ -26,6 +31,7 @@ export function DrillExamView({
   examHistory,
   onSaveExamAttempt,
   onJumpToModule,
+  onExamActiveChange,
 }: DrillExamViewProps) {
   const [activeTemplate, setActiveTemplate] = useState<ExamTemplate | null>(null);
   const [questions, setQuestions] = useState<PracticeProblem[]>([]);
@@ -35,6 +41,16 @@ export function DrillExamView({
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [report, setReport] = useState<ExamGradeReport | null>(null);
   const [confirmExit, setConfirmExit] = useState(false);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
+
+  const isExamRunning = Boolean(activeTemplate && !report);
+
+  useEffect(() => {
+    onExamActiveChange?.(isExamRunning);
+    return () => {
+      onExamActiveChange?.(false);
+    };
+  }, [isExamRunning, onExamActiveChange]);
 
   const bestPercentByTemplate = useMemo(() => {
     const best: Record<string, number> = {};
@@ -58,6 +74,7 @@ export function DrillExamView({
     setElapsedSeconds(0);
     setReport(null);
     setConfirmExit(false);
+    setConfirmSubmit(false);
   };
 
   const exitExamToLobby = () => {
@@ -66,10 +83,13 @@ export function DrillExamView({
     setAnswers({});
     setReport(null);
     setConfirmExit(false);
+    setConfirmSubmit(false);
   };
 
   const submitExam = () => {
     if (!activeTemplate || report) return;
+    setConfirmSubmit(false);
+    setConfirmExit(false);
     const graded = gradeExamSubmission(questions, answers);
     setReport(graded);
     onSaveExamAttempt({
@@ -81,6 +101,16 @@ export function DrillExamView({
       total: graded.total,
       durationSeconds: elapsedSeconds,
     });
+  };
+
+  const handleRequestSubmit = () => {
+    const answered = Object.keys(answers).length;
+    if (answered < questions.length) {
+      setConfirmExit(false);
+      setConfirmSubmit(true);
+    } else {
+      submitExam();
+    }
   };
 
   useEffect(() => {
@@ -129,6 +159,7 @@ export function DrillExamView({
         if (optionIndex >= 0 && activeQ.options[optionIndex]) {
           const optId = activeQ.options[optionIndex].id;
           setAnswers((prev) => ({ ...prev, [activeQ.id]: optId }));
+          setConfirmSubmit(false);
         }
       }
     };
@@ -142,61 +173,59 @@ export function DrillExamView({
       <main className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-10">
         <div className="space-y-2 max-w-3xl">
           <div className="text-xs font-medium text-[#64748B]">
-            Timed Assessment Center · Calculus I &amp; II
+            Timed Assessment Center · Stratified &amp; Shuffled on Every Attempt
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold text-[#0F172A] text-balance">
             University Drill Exams &amp; Speed Blitzes
           </h1>
           <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-            Simulate real university midterm and final exam pressure. Every completed
-            attempt grades your accuracy by semester and reveals full LaTeX derivations
-            for every missed problem.
+            Simulate real university readiness checks, midterms, and final exam pressure.
+            Questions are sampled evenly across every covered day with randomized choice
+            order so retakes always test real recall.
           </p>
         </div>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {EXAM_TEMPLATES.map((tpl) => {
             const bestPct = bestPercentByTemplate[tpl.id];
+            const trackLabel =
+              tpl.filterCourse === 'both'
+                ? 'Calc I & II'
+                : formatCourseTrackName(tpl.filterCourse);
             return (
-            <article
-              key={tpl.id}
-              className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 flex flex-col justify-between gap-6 hover:border-[#94A3B8] transition-colors"
-            >
-              <div className="space-y-2.5">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B] font-mono-tabular">
-                  <span>{tpl.questionCount} questions</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{tpl.durationMinutes} min</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="font-sans">
-                    {tpl.filterCourse === 'both'
-                      ? 'Calc I & II'
-                      : tpl.filterCourse === 'calc1'
-                        ? 'Calculus I'
-                        : 'Calculus II'}
-                  </span>
-                  {bestPct !== undefined && (
-                    <>
-                      <span aria-hidden="true">·</span>
-                      <span className="font-semibold text-[#059669]">Best {bestPct}%</span>
-                    </>
-                  )}
-                </div>
-                <h2 className="font-display text-xl font-semibold text-[#0F172A]">
-                  {tpl.title}
-                </h2>
-                <p className="text-sm text-[#475569] leading-relaxed">{tpl.subtitle}</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => startExam(tpl)}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg transition-colors cursor-pointer"
+              <article
+                key={tpl.id}
+                className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 flex flex-col justify-between gap-6 hover:border-[#94A3B8] transition-colors"
               >
-                <span>{bestPct !== undefined ? 'Retake Timed Exam' : 'Start Timed Exam'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </article>
+                <div className="space-y-2.5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B] font-mono-tabular">
+                    <span>{tpl.questionCount} questions</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{tpl.durationMinutes} min</span>
+                    <span aria-hidden="true">·</span>
+                    <span className="font-sans">{trackLabel}</span>
+                    {bestPct !== undefined && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span className="font-semibold text-[#059669]">Best {bestPct}%</span>
+                      </>
+                    )}
+                  </div>
+                  <h2 className="font-display text-xl font-semibold text-[#0F172A]">
+                    {tpl.title}
+                  </h2>
+                  <p className="text-sm text-[#475569] leading-relaxed">{tpl.subtitle}</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => startExam(tpl)}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg transition-colors cursor-pointer"
+                >
+                  <span>{bestPct !== undefined ? 'Retake Timed Exam' : 'Start Timed Exam'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </article>
             );
           })}
         </section>
@@ -282,7 +311,7 @@ export function DrillExamView({
                 className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#0F172A] bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#CBD5E1] rounded-lg cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Retake Exam</span>
+                <span>Retake (Reshuffled)</span>
               </button>
               <button
                 type="button"
@@ -297,7 +326,15 @@ export function DrillExamView({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#E2E8F0]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-[#E2E8F0]">
+            {report.byCourse.prealg.total > 0 && (
+              <div className="p-4 bg-[#F8FAFC] rounded-lg font-mono-tabular">
+                <div className="text-xs text-[#64748B] font-sans">Pre-Algebra Accuracy</div>
+                <div className="text-lg font-semibold text-[#0F172A] mt-1">
+                  {report.byCourse.prealg.correct}/{report.byCourse.prealg.total} correct
+                </div>
+              </div>
+            )}
             {report.byCourse.calc1.total > 0 && (
               <div className="p-4 bg-[#F8FAFC] rounded-lg font-mono-tabular">
                 <div className="text-xs text-[#64748B] font-sans">Calculus I Accuracy</div>
@@ -335,37 +372,67 @@ export function DrillExamView({
             </div>
           ) : (
             <div className="space-y-4">
-              {report.missedProblems.map((prob) => (
-                <article
-                  key={prob.id}
-                  className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-3"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748B]">
-                    <span>
-                      {prob.course === 'calc1' ? 'Calculus I' : 'Calculus II'} ·{' '}
-                      {prob.topicTag}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onJumpToModule(prob.moduleId)}
-                      className="text-[#1D4ED8] hover:underline font-medium cursor-pointer"
-                    >
-                      Open Source Lesson
-                    </button>
-                  </div>
-                  <p className="text-sm font-medium text-[#0F172A]">{prob.prompt}</p>
-                  <div className="px-4 py-3 bg-[#F8FAFC] rounded-lg">
-                    <MathTex tex={prob.promptTex} display />
-                  </div>
-                  <div className="p-4 bg-[#ECFDF5] border border-[#A7F3D0] rounded-lg space-y-2">
-                    <div className="text-xs font-semibold text-[#065F46]">
-                      Correct Derivation
+              {report.missedProblems.map((prob) => {
+                const pickedId = answers[prob.id];
+                const pickedOpt = prob.options.find((o) => o.id === pickedId);
+                const correctOpt = prob.options.find((o) => o.id === prob.correctOptionId);
+                return (
+                  <article
+                    key={prob.id}
+                    className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-3"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748B]">
+                      <span>
+                        {formatCourseTrackName(prob.course)} · {prob.topicTag}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => onJumpToModule(prob.moduleId)}
+                        className="text-[#1D4ED8] hover:underline font-medium cursor-pointer"
+                      >
+                        Open Source Lesson
+                      </button>
                     </div>
-                    <MathTex tex={prob.solutionTex} display className="text-[#0F172A]" />
-                    <p className="text-xs text-[#1E293B]">{prob.solutionExplanation}</p>
-                  </div>
-                </article>
-              ))}
+                    <p className="text-sm font-medium text-[#0F172A]">{prob.prompt}</p>
+                    <div className="px-4 py-3 bg-[#F8FAFC] rounded-lg">
+                      <MathTex tex={prob.promptTex} display />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div className="p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B]">
+                        <div className="font-semibold mb-1">Your Answer</div>
+                        {pickedOpt ? (
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono-tabular uppercase font-semibold">
+                              ({pickedOpt.id})
+                            </span>
+                            <MathTex tex={pickedOpt.labelTex} />
+                          </div>
+                        ) : (
+                          <span>Unanswered</span>
+                        )}
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46]">
+                        <div className="font-semibold mb-1">Correct Answer</div>
+                        {correctOpt && (
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono-tabular uppercase font-semibold">
+                              ({correctOpt.id})
+                            </span>
+                            <MathTex tex={correctOpt.labelTex} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg space-y-2">
+                      <div className="text-xs font-semibold text-[#0F172A]">
+                        Full Derivation
+                      </div>
+                      <MathTex tex={prob.solutionTex} display className="text-[#0F172A]" />
+                      <p className="text-xs text-[#334155]">{prob.solutionExplanation}</p>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
@@ -376,12 +443,13 @@ export function DrillExamView({
   // 3. Active Timed Exam Session
   const activeQ = questions[currentIdx];
   const answeredCount = Object.keys(answers).length;
+  const unansweredCount = Math.max(0, questions.length - answeredCount);
   const progressPct =
     questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   return (
     <main className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Exam Top Bar with Progress & Safe Exit */}
+      {/* Exam Top Bar with Progress & Safe Exit / Submit Confirmation */}
       <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl overflow-hidden">
         <div className="h-1 w-full bg-[#E2E8F0]">
           <div
@@ -398,6 +466,7 @@ export function DrillExamView({
                   if (answeredCount === 0) {
                     exitExamToLobby();
                   } else {
+                    setConfirmSubmit(false);
                     setConfirmExit(true);
                   }
                 }}
@@ -446,21 +515,47 @@ export function DrillExamView({
 
             <button
               type="button"
-              onClick={submitExam}
+              onClick={handleRequestSubmit}
               className="px-4 py-2 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg cursor-pointer"
             >
               Submit Exam
             </button>
           </div>
         </div>
+
+        {/* Inline Unanswered Confirmation Guard */}
+        {confirmSubmit && (
+          <div className="px-4 sm:px-6 py-3 bg-[#FFFBEB] border-t border-[#FDE68A] flex flex-wrap items-center justify-between gap-3 text-xs">
+            <span className="text-[#92400E] font-medium">
+              You still have{' '}
+              <strong className="font-mono-tabular">{unansweredCount}</strong> unanswered{' '}
+              {unansweredCount === 1 ? 'question' : 'questions'}. Grade exam now?
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={submitExam}
+                className="px-3 py-1.5 font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-md cursor-pointer"
+              >
+                Confirm Submit
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmSubmit(false)}
+                className="px-3 py-1.5 font-medium text-[#334155] bg-[#FFFFFF] hover:bg-[#F8FAFC] border border-[#CBD5E1] rounded-md cursor-pointer"
+              >
+                Keep Working
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Question Card */}
       <section className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between text-xs text-[#64748B]">
           <span>
-            {activeQ.course === 'calc1' ? 'Calculus I' : 'Calculus II'} · {activeQ.topicTag}{' '}
-            · {activeQ.difficulty}
+            {formatCourseTrackName(activeQ.course)} · {activeQ.topicTag} · {activeQ.difficulty}
           </span>
         </div>
 
@@ -477,9 +572,10 @@ export function DrillExamView({
               <button
                 key={opt.id}
                 type="button"
-                onClick={() =>
-                  setAnswers((prev) => ({ ...prev, [activeQ.id]: opt.id }))
-                }
+                onClick={() => {
+                  setAnswers((prev) => ({ ...prev, [activeQ.id]: opt.id }));
+                  setConfirmSubmit(false);
+                }}
                 aria-pressed={selected}
                 className={`px-4 py-3.5 rounded-lg border text-left flex items-center gap-3 transition-colors cursor-pointer ${
                   selected
@@ -517,7 +613,7 @@ export function DrillExamView({
           ) : (
             <button
               type="button"
-              onClick={submitExam}
+              onClick={handleRequestSubmit}
               className="px-4 py-2 text-xs font-semibold text-white bg-[#059669] hover:bg-[#047857] rounded-lg cursor-pointer"
             >
               Finish &amp; Grade Exam

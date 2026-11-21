@@ -1,11 +1,21 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, Circle, RotateCcw } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Circle, RotateCcw, Search } from 'lucide-react';
 import { MODULE_MEDIA_MAP, TOTAL_COURSE_VIDEOS } from '../data/moduleMediaAndNotes';
-import type { CourseModule, PaceId, UserProgressState } from '../types/course';
+import type {
+  CourseModule,
+  PaceId,
+  StartingTrack,
+  UserProgressState,
+} from '../types/course';
 import {
   PACE_CONFIGS,
+  STARTING_TRACK_CONFIGS,
+  formatCourseTrackName,
+  formatModuleNumberPrefix,
+  formatModuleShortLabel,
   formatShortDate,
   getModuleScheduleSlot,
+  getModulesForStartingTrack,
   type ProgressSummary,
 } from '../utils/courseProgress';
 import { MathTex } from './MathTex';
@@ -17,13 +27,14 @@ interface CoursePlanViewProps {
   onSelectModule: (moduleId: string) => void;
   onToggleComplete: (moduleId: string) => void;
   onChangePace: (paceId: PaceId) => void;
+  onChangeStartingTrack: (track: StartingTrack) => void;
   onChangeStartDate: (isoDate: string) => void;
   onOpenExams: () => void;
   onOpenFormulas: () => void;
   onResetProgress: () => void;
 }
 
-type FilterTrack = 'all' | 'calc1' | 'calc2' | 'remaining';
+type FilterTrack = 'all' | 'prealg' | 'calc1' | 'calc2' | 'remaining';
 
 const HERO_IMAGE_PATH = '/src/assets/images/hero_calculus_plate_1795077044472.jpg';
 
@@ -58,12 +69,14 @@ export function CoursePlanView({
   onSelectModule,
   onToggleComplete,
   onChangePace,
+  onChangeStartingTrack,
   onChangeStartDate,
   onOpenExams,
   onOpenFormulas,
   onResetProgress,
 }: CoursePlanViewProps) {
   const [trackFilter, setTrackFilter] = useState<FilterTrack>('all');
+  const [syllabusQuery, setSyllabusQuery] = useState('');
   const [heroImgFailed, setHeroImgFailed] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
 
@@ -78,18 +91,38 @@ export function CoursePlanView({
   );
 
   const activePace = PACE_CONFIGS[progress.paceId];
+  const activeStartingTrack = STARTING_TRACK_CONFIGS[progress.startingTrack];
+
+  // Build 1-based schedule position map for modules in the active starting track
+  const trackScheduleIndexById = useMemo(() => {
+    const activeMods = getModulesForStartingTrack(modules, progress.startingTrack);
+    const map = new Map<string, number>();
+    activeMods.forEach((m, idx) => map.set(m.id, idx + 1));
+    return map;
+  }, [modules, progress.startingTrack]);
 
   const filteredModules = useMemo(() => {
+    const q = syllabusQuery.trim().toLowerCase();
     return modules.filter((mod) => {
-      if (trackFilter === 'calc1') return mod.course === 'calc1';
-      if (trackFilter === 'calc2') return mod.course === 'calc2';
-      if (trackFilter === 'remaining') return !completedSet.has(mod.id);
-      return true;
+      if (trackFilter === 'prealg' && mod.course !== 'prealg') return false;
+      if (trackFilter === 'calc1' && mod.course !== 'calc1') return false;
+      if (trackFilter === 'calc2' && mod.course !== 'calc2') return false;
+      if (trackFilter === 'remaining' && completedSet.has(mod.id)) return false;
+      if (!q) return true;
+      return (
+        mod.title.toLowerCase().includes(q) ||
+        mod.subtitle.toLowerCase().includes(q) ||
+        mod.phase.toLowerCase().includes(q) ||
+        mod.keyTopics.some((t) => t.toLowerCase().includes(q)) ||
+        formatModuleShortLabel(mod).toLowerCase().includes(q)
+      );
     });
-  }, [modules, trackFilter, completedSet]);
+  }, [modules, trackFilter, syllabusQuery, completedSet]);
 
   const nextModule =
     modules.find((m) => m.id === summary.nextRecommendedModuleId) ?? modules[0];
+  const nextModuleLabel = formatModuleShortLabel(nextModule);
+  const shortNextTitle = nextModule.title.split(',')[0].split('&')[0].trim();
 
   const remainingHours = (summary.remainingMinutes / 60).toFixed(1);
 
@@ -100,54 +133,82 @@ export function CoursePlanView({
         <div className="lg:col-span-7 flex flex-col justify-between bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 lg:p-10">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#475569]">
-              <span>University Curriculum</span>
+              <span>Pre-Algebra → Calc I &amp; II</span>
               <span aria-hidden="true">·</span>
               <span>{TOTAL_COURSE_VIDEOS} Embedded Video Lectures</span>
               <span aria-hidden="true">·</span>
-              <span>Full Textbook &amp; Labs</span>
+              <span>Full Textbooks &amp; Labs</span>
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] leading-[1.12] font-semibold tracking-tight text-[#0F172A] text-balance">
-              Master University Calculus I &amp; II in the Shortest Possible Time
+              Master Pre-Algebra &amp; University Calculus I–II in the Shortest Possible Time
             </h1>
 
             <p className="text-base text-[#475569] leading-relaxed max-w-[62ch]">
-              Everything required for full two-semester university mastery—limits through
-              Taylor series and polar geometry—combining embedded Professor Leonard &amp;
-              3Blue1Brown video lectures, full textbook chapters, curated MIT OCW / OpenStax
-              / Paul&rsquo;s Notes readings, interactive visual labs, and timed exams.
+              Choose your starting level below—refresh Pre-Algebra &amp; Trig (Prep 1–6)
+              or jump straight into Calculus I &amp; II (Days 1–14)—with{' '}
+              {TOTAL_COURSE_VIDEOS} embedded Professor Leonard &amp; 3Blue1Brown lectures,
+              OpenStax chapters, interactive labs, and timed university exams.
             </p>
           </div>
 
-          <div className="pt-8 mt-6 border-t border-[#E2E8F0] flex flex-wrap items-center gap-4">
-            <button
-              type="button"
-              onClick={() => onSelectModule(nextModule.id)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <span>
-                {summary.completedModules === 0
-                  ? 'Start Day 1: Limits & Continuity'
-                  : `Continue Day ${nextModule.dayNumber} Studio`}
+          <div className="pt-8 mt-6 border-t border-[#E2E8F0] space-y-4">
+            {/* Quick Starting-Level Switcher right above CTA */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-[#64748B] mr-1">
+                My Path:
               </span>
-              <ArrowRight className="w-4 h-4 shrink-0" />
-            </button>
+              {(Object.keys(STARTING_TRACK_CONFIGS) as StartingTrack[]).map((tid) => {
+                const cfg = STARTING_TRACK_CONFIGS[tid];
+                const isSelected = progress.startingTrack === tid;
+                return (
+                  <button
+                    key={tid}
+                    type="button"
+                    onClick={() => onChangeStartingTrack(tid)}
+                    aria-pressed={isSelected}
+                    className={`px-3 py-1 text-xs font-medium rounded-md border cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#0F172A] text-white border-[#0F172A] font-semibold'
+                        : 'bg-[#F8FAFC] text-[#475569] border-[#CBD5E1] hover:border-[#64748B]'
+                    }`}
+                  >
+                    {cfg.shortLabel}
+                  </button>
+                );
+              })}
+            </div>
 
-            <button
-              type="button"
-              onClick={onOpenExams}
-              className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-[#0F172A] bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#CBD5E1] rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              Take Diagnostic Exam
-            </button>
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                onClick={() => onSelectModule(nextModule.id)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <span>
+                  {summary.completedModules === 0
+                    ? `Start ${nextModuleLabel}: ${shortNextTitle}`
+                    : `Continue ${nextModuleLabel}: ${shortNextTitle}`}
+                </span>
+                <ArrowRight className="w-4 h-4 shrink-0" />
+              </button>
 
-            <button
-              type="button"
-              onClick={onOpenFormulas}
-              className="text-sm font-medium text-[#1D4ED8] hover:text-[#1E40AF] underline underline-offset-4 whitespace-nowrap shrink-0 cursor-pointer px-1 py-2"
-            >
-              Open Formula Vault
-            </button>
+              <button
+                type="button"
+                onClick={onOpenExams}
+                className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-[#0F172A] bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#CBD5E1] rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                Take Diagnostic Exam
+              </button>
+
+              <button
+                type="button"
+                onClick={onOpenFormulas}
+                className="text-sm font-medium text-[#1D4ED8] hover:text-[#1E40AF] underline underline-offset-4 whitespace-nowrap shrink-0 cursor-pointer px-1 py-2"
+              >
+                Open Formula Vault
+              </button>
+            </div>
           </div>
         </div>
 
@@ -184,13 +245,15 @@ export function CoursePlanView({
         </div>
       </section>
 
-      {/* Section 2: Full-Width 4-Column Course Metrics Strip */}
+      {/* Section 2: Full-Width 4-Column Course Metrics Strip (Mathematically Reconciled to Active Path) */}
       <section
         aria-label="Course progress overview"
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5">
-          <div className="text-xs font-medium text-[#64748B]">Overall Mastery</div>
+          <div className="text-xs font-medium text-[#64748B]">
+            Path Mastery ({activeStartingTrack.shortLabel})
+          </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-mono-tabular text-2xl font-semibold text-[#0F172A]">
               {summary.completionPercent}%
@@ -226,10 +289,10 @@ export function CoursePlanView({
             <span className="text-2xl font-semibold text-[#0F172A]">
               {summary.solvedCorrectCount}
             </span>
-            <span className="text-xs text-[#475569]">/ {summary.totalProblems} verified</span>
+            <span className="text-xs text-[#475569]">/ {summary.totalProblems} in path</span>
           </div>
           <p className="mt-2.5 text-xs text-[#64748B] font-mono-tabular">
-            Calc I {summary.calc1Completed}/{summary.calc1Total} · Calc II {summary.calc2Completed}/{summary.calc2Total}
+            Prep {summary.prealgCompleted}/{summary.prealgTotal} · Calc I {summary.calc1Completed}/{summary.calc1Total} · Calc II {summary.calc2Completed}/{summary.calc2Total}
           </p>
         </div>
 
@@ -240,11 +303,11 @@ export function CoursePlanView({
               {formatShortDate(summary.projectedFinishDateIso)}
             </span>
             <span className="text-xs text-[#475569] font-mono-tabular">
-              {activePace.hoursPerDay.toFixed(1)}h/day
+              {summary.requiredHoursPerDay.toFixed(1)}h/day
             </span>
           </div>
           <p className="mt-2.5 text-xs text-[#64748B] font-mono-tabular">
-            {remainingHours} study hrs remaining
+            {remainingHours} hrs across {summary.effectiveTotalDays} days
           </p>
         </div>
       </section>
@@ -257,7 +320,7 @@ export function CoursePlanView({
               Compression Schedule
             </h2>
             <p className="mt-1 text-sm text-[#475569]">
-              Choose your target speed. Every module date in the syllabus updates live.
+              {activeStartingTrack.description}
             </p>
           </div>
 
@@ -276,7 +339,7 @@ export function CoursePlanView({
                   type="button"
                   onClick={() => onChangePace(pid)}
                   aria-pressed={isSelected}
-                  className={`px-2.5 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`px-2 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap cursor-pointer ${
                     isSelected
                       ? 'bg-[#FFFFFF] text-[#0F172A] shadow-xs font-semibold'
                       : 'text-[#475569] hover:text-[#0F172A]'
@@ -312,9 +375,9 @@ export function CoursePlanView({
             </div>
 
             <div className="text-right font-mono-tabular">
-              <div className="text-xs text-[#64748B]">Daily Commitment</div>
+              <div className="text-xs text-[#64748B]">Exact Commitment</div>
               <div className="text-lg font-semibold text-[#1D4ED8]">
-                {activePace.hoursPerDay.toFixed(1)} hrs/day · {activePace.totalDays} days
+                {summary.requiredHoursPerDay.toFixed(1)} hrs/day · {summary.effectiveTotalDays} days
               </div>
             </div>
           </div>
@@ -350,54 +413,73 @@ export function CoursePlanView({
         </div>
       </section>
 
-      {/* Section 4: Full 14-Module University Curriculum Roadmap */}
+      {/* Section 4: Full 20-Module Curriculum Roadmap (Pre-Algebra + Calculus I & II) */}
       <section aria-labelledby="syllabus-heading" className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
             <h2
               id="syllabus-heading"
               className="font-display text-2xl sm:text-3xl font-semibold text-[#0F172A]"
             >
-              Complete 14-Module Curriculum Plan
+              Complete {modules.length}-Module Curriculum Plan
             </h2>
             <p className="mt-1 text-sm text-[#475569]">
               Click any module to watch its embedded Professor Leonard lectures, read full
-              textbook notes &amp; external references, explore the interactive lab, and pass
-              the mastery check.
+              OpenStax &amp; textbook notes, explore the interactive lab, and pass the
+              mastery check.
             </p>
           </div>
 
-          {/* Interactive Track Filter */}
-          <div
-            role="group"
-            aria-label="Filter curriculum modules"
-            className="inline-flex items-center gap-1 p-1 bg-[#E2E8F0]/70 rounded-lg self-start sm:self-auto"
-          >
-            {(
-              [
-                { id: 'all', label: 'All (14)' },
-                { id: 'calc1', label: 'Calculus I (5)' },
-                { id: 'calc2', label: 'Calculus II (9)' },
-                { id: 'remaining', label: 'Remaining' },
-              ] as { id: FilterTrack; label: string }[]
-            ).map((tab) => {
-              const active = trackFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setTrackFilter(tab.id)}
-                  aria-pressed={active}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                    active
-                      ? 'bg-[#FFFFFF] text-[#0F172A] shadow-xs font-semibold'
-                      : 'text-[#475569] hover:text-[#0F172A]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {/* Quick Topic Search */}
+            <div className="relative min-w-[220px]">
+              <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <label htmlFor="syllabus-search" className="sr-only">
+                Search modules or topics
+              </label>
+              <input
+                id="syllabus-search"
+                type="search"
+                value={syllabusQuery}
+                onChange={(e) => setSyllabusQuery(e.target.value)}
+                placeholder="Jump to L'Hôpital, Taylor, Unit Circle..."
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#94A3B8]"
+              />
+            </div>
+
+            {/* Interactive Track Filter */}
+            <div
+              role="group"
+              aria-label="Filter curriculum modules"
+              className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#E2E8F0]/70 rounded-lg self-start sm:self-auto"
+            >
+              {(
+                [
+                  { id: 'all', label: `All (${modules.length})` },
+                  { id: 'prealg', label: `Pre-Algebra (${summary.prealgTotal})` },
+                  { id: 'calc1', label: `Calculus I (${summary.calc1Total})` },
+                  { id: 'calc2', label: `Calculus II (${summary.calc2Total})` },
+                  { id: 'remaining', label: 'Remaining' },
+                ] as { id: FilterTrack; label: string }[]
+              ).map((tab) => {
+                const active = trackFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setTrackFilter(tab.id)}
+                    aria-pressed={active}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                      active
+                        ? 'bg-[#FFFFFF] text-[#0F172A] shadow-xs font-semibold'
+                        : 'text-[#475569] hover:text-[#0F172A]'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -405,16 +487,22 @@ export function CoursePlanView({
         {filteredModules.length === 0 ? (
           <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-10 text-center space-y-3">
             <p className="font-display text-lg font-semibold text-[#0F172A]">
-              All 14 modules are marked complete
+              {syllabusQuery.trim()
+                ? `No modules matching "${syllabusQuery.trim()}"`
+                : `All ${modules.length} modules are marked complete`}
             </p>
             <p className="text-sm text-[#475569]">
-              Switch to &ldquo;All (14)&rdquo; to revisit any module, or test yourself under
-              exam conditions in Drill Exam.
+              {syllabusQuery.trim()
+                ? 'Try clearing your search or switching back to All modules.'
+                : `Switch to "All (${modules.length})" to revisit any module, or test yourself under exam conditions in Drill Exam.`}
             </p>
             <div className="pt-2 flex items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={() => setTrackFilter('all')}
+                onClick={() => {
+                  setSyllabusQuery('');
+                  setTrackFilter('all');
+                }}
                 className="px-4 py-2 text-sm font-medium text-[#0F172A] bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg hover:bg-[#F1F5F9] cursor-pointer"
               >
                 Show All Modules
@@ -435,32 +523,48 @@ export function CoursePlanView({
               const isUpNext = !isCompleted && mod.id === summary.nextRecommendedModuleId;
               const prevMod = idx > 0 ? filteredModules[idx - 1] : null;
               const showSemesterBanner =
-                trackFilter === 'all' && (!prevMod || prevMod.course !== mod.course);
+                trackFilter === 'all' &&
+                !syllabusQuery.trim() &&
+                (!prevMod || prevMod.course !== mod.course);
 
-              const slot = getModuleScheduleSlot(
-                mod.dayNumber,
-                progress.paceId,
-                progress.startDateIso
-              );
+              const schedulePosition = trackScheduleIndexById.get(mod.id);
+              const slot = schedulePosition
+                ? getModuleScheduleSlot(
+                    schedulePosition,
+                    progress.paceId,
+                    progress.startDateIso
+                  )
+                : null;
+
               const solvedInMod = mod.practiceProblems.filter(
                 (p) => progress.solvedProblemIds[p.id]?.isCorrect
               ).length;
               const modVideos = MODULE_MEDIA_MAP[mod.id]?.videos ?? [];
               const watchedInMod = modVideos.filter((v) => watchedSet.has(v.id)).length;
+              const modLabel = formatModuleShortLabel(mod);
+              const modPrefix = formatModuleNumberPrefix(mod);
+
+              const bannerTitle =
+                mod.course === 'prealg'
+                  ? 'Foundation Track · Pre-Algebra & Precalculus Prep (P1–P6 · Optional Warmup)'
+                  : mod.course === 'calc1'
+                    ? 'Semester I · Calculus I Core (Days 1–5)'
+                    : 'Semester II · Calculus II Integration, Series & Polar Geometry (Days 6–14)';
+
+              const bannerProgress =
+                mod.course === 'prealg'
+                  ? `${summary.prealgCompleted}/${summary.prealgTotal} complete`
+                  : mod.course === 'calc1'
+                    ? `${summary.calc1Completed}/${summary.calc1Total} complete`
+                    : `${summary.calc2Completed}/${summary.calc2Total} complete`;
 
               return (
                 <div key={mod.id}>
                   {showSemesterBanner && (
                     <div className="px-5 sm:px-6 py-2.5 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between text-xs font-semibold text-[#475569]">
-                      <span>
-                        {mod.course === 'calc1'
-                          ? 'Semester I · Calculus I Core (Days 1–5)'
-                          : 'Semester II · Calculus II Integration, Series & Polar Geometry (Days 6–14)'}
-                      </span>
+                      <span>{bannerTitle}</span>
                       <span className="font-mono-tabular text-[#64748B] font-normal hidden sm:inline">
-                        {mod.course === 'calc1'
-                          ? `${summary.calc1Completed}/${summary.calc1Total} complete`
-                          : `${summary.calc2Completed}/${summary.calc2Total} complete`}
+                        {bannerProgress}
                       </span>
                     </div>
                   )}
@@ -476,8 +580,8 @@ export function CoursePlanView({
                         onClick={() => onToggleComplete(mod.id)}
                         aria-label={
                           isCompleted
-                            ? `Mark Day ${mod.dayNumber} incomplete`
-                            : `Mark Day ${mod.dayNumber} complete`
+                            ? `Mark ${modLabel} incomplete`
+                            : `Mark ${modLabel} complete`
                         }
                         aria-pressed={isCompleted}
                         className="mt-0.5 shrink-0 text-[#94A3B8] hover:text-[#059669] transition-colors cursor-pointer p-1 -m-1"
@@ -492,13 +596,15 @@ export function CoursePlanView({
                       <div className="min-w-0 space-y-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[#64748B] font-mono-tabular">
                           <span className="font-semibold text-[#1D4ED8]">
-                            {slot.scheduleDayLabel}
+                            {modLabel}
                           </span>
                           <span aria-hidden="true">·</span>
-                          <span>{slot.formattedDate}</span>
+                          <span>
+                            {slot ? `${slot.formattedDate} (${slot.scheduleDayLabel})` : 'Optional / Outside Path'}
+                          </span>
                           <span aria-hidden="true">·</span>
                           <span className="font-sans">
-                            {mod.course === 'calc1' ? 'Calculus I' : 'Calculus II'}
+                            {formatCourseTrackName(mod.course)}
                           </span>
                           <span aria-hidden="true">·</span>
                           <span>{modVideos.length} lectures</span>
@@ -528,7 +634,7 @@ export function CoursePlanView({
                             onClick={() => onSelectModule(mod.id)}
                             className="text-left hover:text-[#1D4ED8] transition-colors cursor-pointer"
                           >
-                            {String(mod.dayNumber).padStart(2, '0')}. {mod.title}
+                            {modPrefix}. {mod.title}
                           </button>
                         </h3>
 
@@ -572,8 +678,8 @@ export function CoursePlanView({
       {/* Quiet Footer Actions */}
       <footer className="pt-8 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-[#64748B]">
         <div>
-          Principia Calculus · Complete University Calculus I &amp; II Self-Study Platform.
-          Progress saves automatically to this browser.
+          Principia Calculus · Pre-Algebra, Precalculus &amp; University Calculus I–II
+          Self-Study Platform. Progress saves automatically to this browser.
         </div>
 
         <div className="flex items-center gap-3">
