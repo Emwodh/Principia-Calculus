@@ -148,7 +148,7 @@ export const TEXTBOOK_CALC1: Record<string, TextbookSection[]> = {
     {
       heading: '4.2 The Fundamental Theorem of Calculus (Parts I & II)',
       paragraphs: [
-        'Computing definite integrals directly from Riemann sums is brutal even for x³. The Fundamental Theorem of Calculus (FTC) reveals the miraculous shortcut: accumulation (integration) and rate of change (differentiation) are exact inverses.',
+        'Computing definite integrals directly from Riemann sums is tedious even for x³. The Fundamental Theorem of Calculus (FTC) reveals the core bridge: accumulation (integration) and rate of change (differentiation) are exact inverses.',
         'FTC Part I defines the area-so-far function g(x) = ∫_a^x f(t) dt for a continuous function f. If you nudge x forward by a tiny dx, the extra sliver of area added is a thin rectangle of height f(x) and width dx, so dg/dx = f(x). Combined with the Chain Rule, differentiating an integral with moving bounds u(x) and v(x) gives f(v(x))v′(x) − f(u(x))u′(x). FTC Part II then follows immediately: if F is ANY antiderivative of f (so F′ = f), then ∫_a^b f(x) dx = F(b) − F(a). Physically, integrating velocity yields net displacement (Net Change Theorem), whereas integrating |v(t)| yields total distance traveled.',
       ],
       keyFormulaTex:
@@ -157,10 +157,10 @@ export const TEXTBOOK_CALC1: Record<string, TextbookSection[]> = {
         'FTC Part I (generalized Leibniz form) and FTC Part II (Net Change Theorem).',
     },
     {
-      heading: '4.3 Mastery of u-Substitution & Symmetry Shortcuts',
+      heading: '4.3 Mastery of u-Substitution & Symmetry Properties',
       paragraphs: [
         'The Chain Rule produces derivatives of the form f(g(x)) · g′(x). Reversing that rule is u-Substitution: look inside a composite expression (inside a radical, denominator, exponent, or trig argument) for an inner chunk u = g(x) whose derivative g′(x) dx also appears as a multiplicative factor up to a constant multiple. Replace g(x) with u and g′(x) dx with du, integrate in u, and return to x for indefinite integrals.',
-        'For DEFINITE integrals, always transform the bounds immediately: when x = a, u = g(a); when x = b, u = g(b). This eliminates back-substitution errors and saves critical exam seconds. Also inspect every symmetric interval [−a, a] before calculating: if f(−x) = −f(x) (odd function like x³ cos x), the integral is instantly 0; if f(−x) = f(x) (even function like x² + cos x), double the integral over [0, a].',
+        'For DEFINITE integrals, always transform the bounds immediately: when x = a, u = g(a); when x = b, u = g(b). This avoids back-substitution mistakes and keeps every step transparent. Also inspect every symmetric interval [−a, a] before calculating: if f(−x) = −f(x) (odd function like x³ cos x), the integral is 0 by cancellation; if f(−x) = f(x) (even function like x² + cos x), double the integral over [0, a].',
       ],
     },
   ],

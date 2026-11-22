@@ -52,7 +52,7 @@ export const TEXTBOOK_CALC2: Record<string, TextbookSection[]> = {
         'Next, factor Q(x) completely over the real numbers into linear factors (ax + b) and irreducible quadratics (ax² + bx + c with b² − 4ac < 0). Assign undetermined constants according to four rules: (1) Distinct linear factor (x − r) gets A/(x − r); (2) Repeated linear factor (x − r)ᵏ gets k terms A₁/(x − r) + A₂/(x − r)² + ... + Aₖ/(x − r)ᵏ; (3) Irreducible quadratic (ax² + bx + c) gets a LINEAR numerator (Bx + C)/(ax² + bx + c); (4) Repeated irreducible quadratic gets k such linear-numerator terms.',
       ],
       bulletPoints: [
-        'Heaviside Cover-Up Shortcut: For any distinct linear factor (x − r), cover (x − r) in the original fraction and plug x = r into everything left—that gives coefficient A in 3 seconds without solving a linear system.',
+        'Heaviside Cover-Up Method: For any distinct linear factor (x − r), multiplying both sides by (x − r) and evaluating at x = r isolates the coefficient A directly—giving both speed and intuition for residues.',
         'Integrating an irreducible quadratic (Bx + C)/(x² + a²): split into TWO integrals—B · x/(x² + a²) integrates to a logarithm via u-sub, while C/(x² + a²) integrates to (C/a) arctan(x/a).',
       ],
     },
@@ -201,7 +201,7 @@ export const TEXTBOOK_CALC2: Record<string, TextbookSection[]> = {
       heading: '13.1 Parametric Motion: Slopes, Concavity & Arc Length',
       paragraphs: [
         'Parametric equations x = x(t), y = y(t) describe a particle’s trajectory over time t, allowing curves to loop, cross themselves, or move vertically—all impossible for a single function y = f(x). The tangent slope at time t follows from the Chain Rule: dy/dx = (dy/dt)/(dx/dt). Horizontal tangents occur where dy/dt = 0 (with dx/dt ≠ 0); vertical tangents occur where dx/dt = 0 (with dy/dt ≠ 0).',
-        'Watch out for the famous concavity trap: to compute d²y/dx², you are differentiating (dy/dx) with respect to x, NOT t! Therefore d²y/dx² = [d/dt(dy/dx)] / (dx/dt)—you must divide by dx/dt a second time. Parametric arc length follows directly from the speed vector √([x′(t)]² + [y′(t)]²): integrating speed over [t₁, t₂] gives exact distance traveled.',
+        'Watch out for a common concavity pitfall: to compute d²y/dx², you are differentiating (dy/dx) with respect to x, NOT t! Therefore d²y/dx² = [d/dt(dy/dx)] / (dx/dt)—you must divide by dx/dt a second time. Parametric arc length follows directly from the speed vector √([x′(t)]² + [y′(t)]²): integrating speed over [t₁, t₂] gives exact distance traveled.',
       ],
       keyFormulaTex:
         '\\frac{dy}{dx} = \\frac{y\'(t)}{x\'(t)}, \\qquad \\frac{d^2y}{dx^2} = \\frac{\\frac{d}{dt}(dy/dx)}{x\'(t)}, \\qquad L = \\int_{t_1}^{t_2} \\sqrt{[x\'(t)]^2 + [y\'(t)]^2}\\,dt',

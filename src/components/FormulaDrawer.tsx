@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BookMarked, Search, X } from 'lucide-react';
+import { BookMarked, Flag, Search, X } from 'lucide-react';
 import { FORMULA_VAULT } from '../data/formulas';
 import type { CourseTrack } from '../types/course';
 import { formatCourseTrackName } from '../utils/courseProgress';
+import { buildMathErrorIssueUrl } from '../utils/issueLinks';
 import { MathTex } from './MathTex';
 
 interface FormulaDrawerProps {
@@ -76,13 +77,13 @@ export function FormulaDrawer({
           </div>
 
           <div className="relative">
-            <Search className="w-4 h-4 text-[#64748B] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#475569] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search trig, log, L'Hôpital, IBP, Taylor..."
-              className="w-full pl-9 pr-3 py-2 text-sm bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#94A3B8]"
+              className="w-full pl-9 pr-3 py-2 text-sm bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#64748B]"
             />
           </div>
 
@@ -111,7 +112,7 @@ export function FormulaDrawer({
                 All {FORMULA_VAULT.length}
               </button>
             </div>
-            <span className="font-mono-tabular text-[#64748B]">
+            <span className="font-mono-tabular text-[#475569]">
               {filtered.length} shown · Esc to close
             </span>
           </div>
@@ -132,16 +133,35 @@ export function FormulaDrawer({
                   <div className="text-sm font-semibold text-[#0F172A]">
                     {entry.name}
                   </div>
-                  <span className="text-[11px] font-mono-tabular text-[#64748B] shrink-0">
+                  <span className="text-[11px] font-mono-tabular text-[#475569] shrink-0">
                     {entry.category}
                   </span>
                 </div>
                 <div className="px-3 py-2 bg-[#F8FAFC] rounded-lg overflow-x-auto">
-                  <MathTex tex={`${entry.lhsTex} = ${entry.rhsTex}`} className="text-sm" />
+                  <MathTex
+                    tex={`${entry.lhsTex} ${entry.relationTex ?? '='} ${entry.rhsTex}`}
+                    className="text-sm"
+                  />
                 </div>
-                <p className="text-xs text-[#475569] leading-relaxed">
-                  {entry.recallCue}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-xs text-[#475569] leading-relaxed">
+                    {entry.recallCue}
+                  </p>
+                  <a
+                    href={buildMathErrorIssueUrl({
+                      itemId: entry.id,
+                      itemLabel: entry.name,
+                      kind: 'formula',
+                      context: entry.category,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[#475569] hover:text-[#1D4ED8] whitespace-nowrap shrink-0"
+                  >
+                    <Flag className="w-3 h-3" />
+                    <span>Report</span>
+                  </a>
+                </div>
               </div>
             ))
           )}

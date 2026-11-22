@@ -11,6 +11,7 @@ import {
   Circle,
   ExternalLink,
   Eye,
+  Flag,
   HelpCircle,
   List,
   PanelLeftClose,
@@ -30,6 +31,7 @@ import {
   getModuleScheduleSlot,
   getModulesForStartingTrack,
 } from '../utils/courseProgress';
+import { buildMathErrorIssueUrl } from '../utils/issueLinks';
 import { FormulaDrawer } from './FormulaDrawer';
 import { InteractiveLab } from './InteractiveLab';
 import { MathTex } from './MathTex';
@@ -110,7 +112,7 @@ export function StudyStudioView({
   const prevModule = currentIndex > 0 ? modules[currentIndex - 1] : null;
   const nextModule = currentIndex < modules.length - 1 ? modules[currentIndex + 1] : null;
 
-  const isPreAlg = activeModule.course === 'prealg';
+  const isPreCalc = activeModule.course === 'precalc';
   const activeLabel = formatModuleShortLabel(activeModule);
   const activePrefix = formatModuleNumberPrefix(activeModule);
   const activeTabNumber = STUDIO_TABS.findIndex((t) => t.id === activeTab) + 1;
@@ -172,7 +174,7 @@ export function StudyStudioView({
         />
       </div>
 
-      {(['prealg', 'calc1', 'calc2'] as const).map((courseKey) => {
+      {(['precalc', 'calc1', 'calc2'] as const).map((courseKey) => {
         const courseMods = modules.filter((m) => {
           if (m.course !== courseKey) return false;
           if (!normalizedRailQuery) return true;
@@ -184,14 +186,14 @@ export function StudyStudioView({
         });
         if (courseMods.length === 0) return null;
         const groupTitle =
-          courseKey === 'prealg'
-            ? 'Pre-Algebra Prep (P1–P6)'
+          courseKey === 'precalc'
+            ? 'Precalculus Prep (P1–P6)'
             : courseKey === 'calc1'
               ? 'Calculus I (Days 1–5)'
               : 'Calculus II (Days 6–14)';
         return (
           <div key={courseKey} className="space-y-1.5">
-            <div className="text-xs font-semibold text-[#64748B] px-2 pb-1 border-b border-[#E2E8F0]">
+            <div className="text-xs font-semibold text-[#475569] px-2 pb-1 border-b border-[#E2E8F0]">
               {groupTitle}
             </div>
             <ul className="space-y-0.5">
@@ -219,12 +221,12 @@ export function StudyStudioView({
                       )}
                       <span className="min-w-0 flex-1 leading-snug">
                         <span className="font-mono-tabular mr-1">
-                          {mod.course === 'prealg' ? `P${mod.dayNumber}` : `D${mod.dayNumber}`}
+                          {mod.course === 'precalc' ? `P${mod.dayNumber}` : `D${mod.dayNumber}`}
                         </span>
                         {mod.title}
                       </span>
                       {modWatched > 0 && (
-                        <span className="font-mono-tabular text-[10px] text-[#64748B] shrink-0 mt-0.5">
+                        <span className="font-mono-tabular text-[10px] text-[#475569] shrink-0 mt-0.5">
                           {modWatched}/{modVids.length}
                         </span>
                       )}
@@ -309,7 +311,7 @@ export function StudyStudioView({
           <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-4 sm:p-5 space-y-3.5">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div className="space-y-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B] font-mono-tabular">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-[#475569] font-mono-tabular">
                   <span className="font-semibold text-[#1D4ED8]">{activeLabel}</span>
                   <span aria-hidden="true">·</span>
                   <span>
@@ -386,7 +388,7 @@ export function StudyStudioView({
 
             {/* 5-Stage Studio Sub-Navigation with Mobile Scroll Cue */}
             <div className="pt-2 border-t border-[#E2E8F0] space-y-1.5">
-              <div className="sm:hidden flex items-center justify-between text-[11px] text-[#64748B] font-mono-tabular">
+              <div className="sm:hidden flex items-center justify-between text-[11px] text-[#475569] font-mono-tabular">
                 <span>Stage {activeTabNumber} of {STUDIO_TABS.length}</span>
                 <span>Swipe tabs →</span>
               </div>
@@ -457,7 +459,7 @@ export function StudyStudioView({
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <div>
                         <div className="text-xs font-medium text-[#1D4ED8]">
-                          {isPreAlg
+                          {isPreCalc
                             ? `Foundation ${activeLabel} · OpenStax Precalculus 2e Notes`
                             : `Chapter ${activeModule.dayNumber} · Complete University Lecture Notes`}
                         </div>
@@ -465,7 +467,7 @@ export function StudyStudioView({
                           {activeModule.title}
                         </h2>
                       </div>
-                      <span className="text-xs font-mono-tabular text-[#64748B]">
+                      <span className="text-xs font-mono-tabular text-[#475569]">
                         {textbookSections.length} textbook sections
                       </span>
                     </div>
@@ -475,7 +477,7 @@ export function StudyStudioView({
                       aria-label="Jump to textbook section"
                       className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs pt-1"
                     >
-                      <span className="text-[#64748B] font-medium">Jump to:</span>
+                      <span className="text-[#475569] font-medium">Jump to:</span>
                       {textbookSections.map((sec, sIdx) => (
                         <a
                           key={sIdx}
@@ -504,16 +506,16 @@ export function StudyStudioView({
                         Core Theorems
                       </a>
                       <a
-                        href="#tb-traps"
+                        href="#tb-pitfalls"
                         onClick={(e) => {
                           e.preventDefault();
                           document
-                            .getElementById('tb-traps')
+                            .getElementById('tb-pitfalls')
                             ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }}
                         className="text-[#1D4ED8] hover:underline font-medium"
                       >
-                        Exam Traps
+                        Common Pitfalls
                       </a>
                     </nav>
                   </div>
@@ -548,7 +550,7 @@ export function StudyStudioView({
                               className="text-base sm:text-lg"
                             />
                             {sec.keyFormulaCaption && (
-                              <p className="text-xs text-[#64748B] text-center">
+                              <p className="text-xs text-[#475569] text-center">
                                 {sec.keyFormulaCaption}
                               </p>
                             )}
@@ -565,14 +567,61 @@ export function StudyStudioView({
                       </article>
                     ))}
                   </div>
+
+                  {/* Per-Section OpenStax CC BY 4.0 Attribution */}
+                  <div className="pt-4 border-t border-[#E2E8F0] text-xs text-[#475569] leading-relaxed">
+                    <strong className="font-semibold text-[#0F172A]">
+                      Attribution (CC BY 4.0):
+                    </strong>{' '}
+                    These study notes are aligned to and adapted from{' '}
+                    {activeModule.course === 'precalc' ? (
+                      <a
+                        href="https://openstax.org/details/books/precalculus-2e"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1D4ED8] hover:underline font-medium"
+                      >
+                        OpenStax Precalculus 2e
+                      </a>
+                    ) : activeModule.course === 'calc1' ? (
+                      <a
+                        href="https://openstax.org/details/books/calculus-volume-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1D4ED8] hover:underline font-medium"
+                      >
+                        OpenStax Calculus Volume 1
+                      </a>
+                    ) : (
+                      <a
+                        href="https://openstax.org/details/books/calculus-volume-2"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1D4ED8] hover:underline font-medium"
+                      >
+                        OpenStax Calculus Volume 2
+                      </a>
+                    )}{' '}
+                    (Rice University), licensed under{' '}
+                    <a
+                      href="https://creativecommons.org/licenses/by/4.0/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#1D4ED8] hover:underline"
+                    >
+                      CC BY 4.0
+                    </a>
+                    . Notes are licensed CC BY 4.0; application source code is licensed
+                    Apache-2.0.
+                  </div>
                 </section>
               )}
 
               {/* Core Theorems & Formal Proofs */}
               <div id="tb-theorems" className="space-y-4 scroll-mt-24">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] px-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#475569] px-1">
                   <BookOpen className="w-4 h-4 text-[#1D4ED8] shrink-0" />
-                  <span>Essential Theorems &amp; Exam Shortcuts</span>
+                  <span>Essential Theorems &amp; Key Insights</span>
                 </div>
 
                 {activeModule.theorems.map((thm, idx) => (
@@ -602,7 +651,7 @@ export function StudyStudioView({
                       </p>
                       {thm.examTip && (
                         <p className="text-[#1E40AF]">
-                          <strong className="font-semibold">Exam Shortcut: </strong>
+                          <strong className="font-semibold">Key Insight: </strong>
                           {thm.examTip}
                         </p>
                       )}
@@ -611,21 +660,21 @@ export function StudyStudioView({
                 ))}
               </div>
 
-              {/* Common University Exam Traps */}
+              {/* Common Conceptual Pitfalls */}
               <section
-                id="tb-traps"
+                id="tb-pitfalls"
                 className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-4 scroll-mt-24"
               >
                 <div className="flex items-center gap-2 text-sm font-semibold text-[#B45309]">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
-                  <span>High-Frequency Exam Traps to Avoid</span>
+                  <span>Common Pitfalls &amp; How to Avoid Them</span>
                 </div>
                 <div className="divide-y divide-[#E2E8F0]">
                   {activeModule.commonTraps.map((item, idx) => (
                     <div key={idx} className="py-3.5 first:pt-0 last:pb-0 space-y-1.5 text-sm">
-                      <p className="text-[#991B1B] font-medium">Trap: {item.trap}</p>
+                      <p className="text-[#991B1B] font-medium">Pitfall: {item.trap}</p>
                       <p className="text-[#334155]">
-                        <strong className="font-semibold text-[#059669]">Fix: </strong>
+                        <strong className="font-semibold text-[#059669]">Why &amp; Fix: </strong>
                         {item.fix}
                       </p>
                     </div>
@@ -640,7 +689,7 @@ export function StudyStudioView({
                     <h3 className="font-display text-lg font-semibold text-[#0F172A]">
                       Additional Open-Access University Notes &amp; Problem Sets
                     </h3>
-                    <span className="text-xs text-[#64748B]">
+                    <span className="text-xs text-[#475569]">
                       Paul&rsquo;s Notes · OpenStax · MIT OCW
                     </span>
                   </div>
@@ -657,7 +706,7 @@ export function StudyStudioView({
                           <div className="text-xs font-medium text-[#1D4ED8]">
                             {res.provider}
                             {res.resourceKind && (
-                              <span className="text-[#64748B]">
+                              <span className="text-[#475569]">
                                 {' '}
                                 ·{' '}
                                 {res.resourceKind === 'theory'
@@ -710,9 +759,9 @@ export function StudyStudioView({
               <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-display text-lg font-semibold text-[#0F172A]">
-                    {activeLabel} Rapid Mastery Checklist
+                    {activeLabel} Study Checklist
                   </h3>
-                  <span className="text-xs text-[#64748B]">
+                  <span className="text-xs text-[#475569]">
                     Prerequisites: {activeModule.prerequisites.join(' · ')}
                   </span>
                 </div>
@@ -753,7 +802,7 @@ export function StudyStudioView({
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
-                        <div className="text-xs text-[#64748B] font-medium">
+                        <div className="text-xs text-[#475569] font-medium">
                           Worked Derivation · {ex.difficulty}
                         </div>
                         <h3 className="font-display text-xl font-semibold text-[#0F172A] mt-0.5">
@@ -761,7 +810,21 @@ export function StudyStudioView({
                         </h3>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
+                        <a
+                          href={buildMathErrorIssueUrl({
+                            itemId: ex.id,
+                            itemLabel: ex.title,
+                            kind: 'example',
+                            context: `${activeLabel} · ${activeModule.title}`,
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-[#475569] hover:text-[#1D4ED8] whitespace-nowrap"
+                        >
+                          <Flag className="w-3.5 h-3.5" />
+                          <span>Report an error</span>
+                        </a>
                         {!allRevealed && (
                           <button
                             type="button"
@@ -856,30 +919,46 @@ export function StudyStudioView({
                     key={prob.id}
                     className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-4"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748B]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#475569]">
                       <span className="font-mono-tabular font-semibold text-[#0F172A]">
                         Problem {idx + 1} of {activeModule.practiceProblems.length} ·{' '}
                         {prob.topicTag} · {prob.difficulty}
                       </span>
-                      {record && (
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`font-semibold ${
-                              record.isCorrect ? 'text-[#059669]' : 'text-[#DC2626]'
-                            }`}
-                          >
-                            {record.isCorrect ? 'Verified Correct' : 'Needs Review'}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => onClearAnswer(prob.id)}
-                            className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium cursor-pointer"
-                          >
-                            <RotateCcw className="w-3 h-3" />
-                            <span>Retry</span>
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {record && (
+                          <>
+                            <span
+                              className={`font-semibold ${
+                                record.isCorrect ? 'text-[#059669]' : 'text-[#DC2626]'
+                              }`}
+                            >
+                              {record.isCorrect ? 'Verified Correct' : 'Needs Review'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => onClearAnswer(prob.id)}
+                              className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium cursor-pointer"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Retry</span>
+                            </button>
+                          </>
+                        )}
+                        <a
+                          href={buildMathErrorIssueUrl({
+                            itemId: prob.id,
+                            itemLabel: prob.topicTag,
+                            kind: 'problem',
+                            context: `${activeLabel} · ${activeModule.title}`,
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium whitespace-nowrap"
+                        >
+                          <Flag className="w-3 h-3" />
+                          <span>Report an error</span>
+                        </a>
+                      </div>
                     </div>
 
                     <p className="text-sm font-medium text-[#0F172A]">{prob.prompt}</p>
@@ -900,7 +979,7 @@ export function StudyStudioView({
                           } else if (isPicked && !isRightOption) {
                             cls = 'bg-[#FEF2F2] border-[#DC2626] text-[#991B1B] cursor-default';
                           } else {
-                            cls = 'bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] cursor-default';
+                            cls = 'bg-[#F8FAFC] border-[#E2E8F0] text-[#475569] cursor-default';
                           }
                         }
 

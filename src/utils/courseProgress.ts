@@ -12,18 +12,18 @@ import type {
 } from '../types/course';
 
 export function formatCourseTrackName(course: CourseTrack): string {
-  if (course === 'prealg') return 'Pre-Algebra';
+  if (course === 'precalc') return 'Precalculus Prep';
   if (course === 'calc1') return 'Calculus I';
   return 'Calculus II';
 }
 
 export function formatModuleShortLabel(mod: Pick<CourseModule, 'course' | 'dayNumber'>): string {
-  return mod.course === 'prealg' ? `Prep ${mod.dayNumber}` : `Day ${mod.dayNumber}`;
+  return mod.course === 'precalc' ? `Prep ${mod.dayNumber}` : `Day ${mod.dayNumber}`;
 }
 
 export function formatModuleNumberPrefix(mod: Pick<CourseModule, 'course' | 'dayNumber'>): string {
   const padded = String(mod.dayNumber).padStart(2, '0');
-  return mod.course === 'prealg' ? `P${padded}` : padded;
+  return mod.course === 'precalc' ? `P${padded}` : padded;
 }
 
 export interface StartingTrackConfig {
@@ -38,13 +38,13 @@ export const STARTING_TRACK_CONFIGS: Record<StartingTrack, StartingTrackConfig> 
     id: 'full',
     label: 'Full Path (Prep → Calc II)',
     shortLabel: 'Prep → Calc II',
-    description: 'Includes Pre-Algebra & Precalculus Prep (P1–P6) plus Calculus I & II (20 modules).',
+    description: 'Includes Precalculus Prep (P1–P6) plus Calculus I & II (20 modules).',
   },
   calc1: {
     id: 'calc1',
     label: 'Calculus I → II (Days 1–14)',
     shortLabel: 'Calc I → II',
-    description: 'Skips Pre-Algebra warmup and schedules Days 1–14 directly (14 modules).',
+    description: 'Skips Precalculus Prep warmup and schedules Days 1–14 directly (14 modules).',
   },
   calc2: {
     id: 'calc2',
@@ -77,29 +77,29 @@ export interface PaceConfig {
 }
 
 export const PACE_CONFIGS: Record<PaceId, PaceConfig> = {
-  cram7: {
-    id: 'cram7',
-    label: 'Exam Cram (2/day)',
-    totalDays: 7,
-    hoursPerDay: 4.5,
-    summary: '2 modules per day · Maximum compression for urgent university exams',
-    modulesPerDay: 2,
-  },
-  sprint14: {
-    id: 'sprint14',
-    label: 'Daily Sprint (1/day)',
-    totalDays: 14,
-    hoursPerDay: 2.3,
-    summary: '1 module per day · Optimal speed-to-retention university track',
-    modulesPerDay: 1,
-  },
   standard28: {
     id: 'standard28',
     label: 'Steady Mastery (½/day)',
     totalDays: 28,
     hoursPerDay: 1.2,
-    summary: '1 module every 2 days · Built-in spaced repetition alongside classes',
+    summary: '1 module every 2 days · Recommended default with spaced practice and time to work derivations',
     modulesPerDay: 0.5,
+  },
+  sprint14: {
+    id: 'sprint14',
+    label: 'Intensive (1/day)',
+    totalDays: 14,
+    hoursPerDay: 2.3,
+    summary: '1 module per day · Full-time daily study schedule for focused self-study',
+    modulesPerDay: 1,
+  },
+  cram7: {
+    id: 'cram7',
+    label: 'Review Only (2/day)',
+    totalDays: 7,
+    hoursPerDay: 4.5,
+    summary: 'Review only: for people who already studied this material. Fast pacing builds familiarity, not mastery.',
+    modulesPerDay: 2,
   },
 };
 
@@ -112,7 +112,7 @@ export function estimateVideoDurationMinutes(
   if (video.instructor === '3Blue1Brown') {
     return 18;
   }
-  if (video.lectureCode.startsWith('Pre-Algebra')) {
+  if (video.lectureCode.startsWith('Precalculus Prep')) {
     return 42;
   }
   return 54;
@@ -135,7 +135,9 @@ export function formatDurationPair(minutes: number): {
   };
 }
 
-export const STORAGE_KEY = 'principia_calculus_progress_v1';
+export const STORAGE_KEY = 'calcatlas_progress_v2';
+export const LEGACY_STORAGE_KEYS = ['principia_calculus_progress_v1'] as const;
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 2;
 
 export function getTodayIso(): string {
   const now = new Date();
@@ -147,7 +149,8 @@ export function getTodayIso(): string {
 
 export function createInitialProgress(firstModuleId: string): UserProgressState {
   return {
-    paceId: 'sprint14',
+    schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
+    paceId: 'standard28',
     startingTrack: 'full',
     startDateIso: getTodayIso(),
     completedModuleIds: [],
@@ -232,8 +235,8 @@ export interface ProgressSummary {
   completedModules: number;
   totalModules: number;
   completionPercent: number;
-  prealgCompleted: number;
-  prealgTotal: number;
+  precalcCompleted: number;
+  precalcTotal: number;
   calc1Completed: number;
   calc1Total: number;
   calc2Completed: number;
@@ -258,10 +261,10 @@ export function computeProgressSummary(
   const totalModules = trackModules.length;
   const completedModules = trackModules.filter((m) => completedSet.has(m.id)).length;
 
-  const prealgModules = modules.filter((m) => m.course === 'prealg');
+  const precalcModules = modules.filter((m) => m.course === 'precalc');
   const calc1Modules = modules.filter((m) => m.course === 'calc1');
   const calc2Modules = modules.filter((m) => m.course === 'calc2');
-  const prealgCompleted = prealgModules.filter((m) => completedSet.has(m.id)).length;
+  const precalcCompleted = precalcModules.filter((m) => completedSet.has(m.id)).length;
   const calc1Completed = calc1Modules.filter((m) => completedSet.has(m.id)).length;
   const calc2Completed = calc2Modules.filter((m) => completedSet.has(m.id)).length;
 
@@ -311,8 +314,8 @@ export function computeProgressSummary(
     totalModules,
     completionPercent:
       totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0,
-    prealgCompleted,
-    prealgTotal: prealgModules.length,
+    precalcCompleted,
+    precalcTotal: precalcModules.length,
     calc1Completed,
     calc1Total: calc1Modules.length,
     calc2Completed,
@@ -343,7 +346,7 @@ export function gradeExamSubmission(
 ): ExamGradeReport {
   let score = 0;
   const byCourse: Record<CourseTrack, { correct: number; total: number }> = {
-    prealg: { correct: 0, total: 0 },
+    precalc: { correct: 0, total: 0 },
     calc1: { correct: 0, total: 0 },
     calc2: { correct: 0, total: 0 },
   };
@@ -369,7 +372,7 @@ export function gradeExamSubmission(
   };
 }
 
-const VALID_VIEWS = new Set<NavView>(['plan', 'studio', 'exam', 'formulas']);
+const VALID_VIEWS = new Set<NavView>(['plan', 'studio', 'exam', 'formulas', 'about']);
 const VALID_STUDIO_TABS = new Set<StudioTab>([
   'videos',
   'theory',
@@ -417,53 +420,248 @@ export function buildHashRoute(
   return `#/${view}`;
 }
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function sanitizeSolvedProblems(
+  raw: unknown
+): Record<string, { selectedOptionId: string; isCorrect: boolean }> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const result: Record<string, { selectedOptionId: string; isCorrect: boolean }> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (
+      v &&
+      typeof v === 'object' &&
+      !Array.isArray(v) &&
+      typeof (v as { selectedOptionId?: unknown }).selectedOptionId === 'string' &&
+      typeof (v as { isCorrect?: unknown }).isCorrect === 'boolean'
+    ) {
+      result[k] = {
+        selectedOptionId: (v as { selectedOptionId: string }).selectedOptionId,
+        isCorrect: (v as { isCorrect: boolean }).isCorrect,
+      };
+    }
+  }
+  return result;
+}
+
+function sanitizeExamHistory(raw: unknown): ExamAttemptRecord[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((item): item is ExamAttemptRecord => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+    const rec = item as Partial<ExamAttemptRecord>;
+    return (
+      typeof rec.id === 'string' &&
+      typeof rec.templateId === 'string' &&
+      typeof rec.title === 'string' &&
+      typeof rec.completedAtIso === 'string' &&
+      typeof rec.score === 'number' &&
+      Number.isFinite(rec.score) &&
+      typeof rec.total === 'number' &&
+      Number.isFinite(rec.total) &&
+      typeof rec.durationSeconds === 'number' &&
+      Number.isFinite(rec.durationSeconds)
+    );
+  });
+}
+
+/**
+ * Migrates raw persisted progress (including legacy unversioned v1 objects)
+ * to CURRENT_PROGRESS_SCHEMA_VERSION, sanitizing any malformed fields.
+ */
+export function migrateProgressState(
+  raw: unknown,
+  firstModuleId: string
+): UserProgressState {
+  const fallback = createInitialProgress(firstModuleId);
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return fallback;
+  }
+
+  const parsed = raw as Partial<UserProgressState> & Record<string, unknown>;
+  const validPace: PaceId =
+    typeof parsed.paceId === 'string' && parsed.paceId in PACE_CONFIGS
+      ? (parsed.paceId as PaceId)
+      : fallback.paceId;
+
+  const validTrack: StartingTrack =
+    typeof parsed.startingTrack === 'string' &&
+    parsed.startingTrack in STARTING_TRACK_CONFIGS
+      ? (parsed.startingTrack as StartingTrack)
+      : fallback.startingTrack;
+
+  const rawLastVid =
+    parsed.lastVideoByModule &&
+    typeof parsed.lastVideoByModule === 'object' &&
+    !Array.isArray(parsed.lastVideoByModule)
+      ? Object.fromEntries(
+          Object.entries(parsed.lastVideoByModule as Record<string, unknown>).filter(
+            ([k, v]) => typeof k === 'string' && typeof v === 'string'
+          ) as [string, string][]
+        )
+      : {};
+
+  const dedupeStrings = (arr: unknown): string[] =>
+    Array.isArray(arr)
+      ? Array.from(new Set(arr.filter((x): x is string => typeof x === 'string')))
+      : [];
+
+  return {
+    schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
+    paceId: validPace,
+    startingTrack: validTrack,
+    startDateIso:
+      typeof parsed.startDateIso === 'string' && ISO_DATE_RE.test(parsed.startDateIso)
+        ? parsed.startDateIso
+        : fallback.startDateIso,
+    completedModuleIds: dedupeStrings(parsed.completedModuleIds),
+    watchedVideoIds: dedupeStrings(parsed.watchedVideoIds),
+    lastVideoByModule: rawLastVid,
+    solvedProblemIds: sanitizeSolvedProblems(parsed.solvedProblemIds),
+    examHistory: sanitizeExamHistory(parsed.examHistory),
+    activeModuleId:
+      typeof parsed.activeModuleId === 'string' && parsed.activeModuleId.length > 0
+        ? parsed.activeModuleId
+        : firstModuleId,
+  };
+}
+
+export interface ProgressExportEnvelope {
+  schemaVersion: number;
+  exportedAtIso: string;
+  progress: UserProgressState;
+}
+
+export function serializeProgressExport(state: UserProgressState): string {
+  const payload: ProgressExportEnvelope = {
+    schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
+    exportedAtIso: new Date().toISOString(),
+    progress: {
+      ...state,
+      schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
+    },
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+export type ProgressImportResult =
+  | { ok: true; state: UserProgressState }
+  | { ok: false; error: string };
+
+/**
+ * Strictly validates and imports an exported JSON progress file (either wrapped
+ * in ProgressExportEnvelope or a raw v1/v2 UserProgressState object).
+ */
+export function parseProgressImport(
+  jsonText: string,
+  firstModuleId: string
+): ProgressImportResult {
+  if (!jsonText.trim()) {
+    return { ok: false, error: 'The selected file is empty.' };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    return {
+      ok: false,
+      error: 'Invalid JSON syntax. Please choose a valid progress backup (.json) file.',
+    };
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return {
+      ok: false,
+      error: 'Invalid backup format: expected a JSON object.',
+    };
+  }
+
+  const top = parsed as Record<string, unknown>;
+  const candidate =
+    top.progress && typeof top.progress === 'object' && !Array.isArray(top.progress)
+      ? (top.progress as Record<string, unknown>)
+      : top;
+
+  const rawVersion =
+    typeof top.schemaVersion === 'number'
+      ? top.schemaVersion
+      : typeof candidate.schemaVersion === 'number'
+        ? candidate.schemaVersion
+        : undefined;
+
+  if (
+    rawVersion !== undefined &&
+    (!Number.isInteger(rawVersion) ||
+      rawVersion < 1 ||
+      rawVersion > CURRENT_PROGRESS_SCHEMA_VERSION)
+  ) {
+    return {
+      ok: false,
+      error: `Unsupported progress schema version (${String(rawVersion)}). Supported versions: 1–${CURRENT_PROGRESS_SCHEMA_VERSION}.`,
+    };
+  }
+
+  const recognizedKeys = [
+    'completedModuleIds',
+    'watchedVideoIds',
+    'solvedProblemIds',
+    'paceId',
+    'startingTrack',
+    'examHistory',
+  ];
+  const hasAnyRecognizedKey = recognizedKeys.some((k) => k in candidate);
+  if (!hasAnyRecognizedKey) {
+    return {
+      ok: false,
+      error:
+        'This JSON file does not appear to be a course progress backup (missing progress fields).',
+    };
+  }
+
+  if (
+    'completedModuleIds' in candidate &&
+    !Array.isArray(candidate.completedModuleIds)
+  ) {
+    return {
+      ok: false,
+      error: 'Invalid backup file: "completedModuleIds" must be an array.',
+    };
+  }
+  if ('watchedVideoIds' in candidate && !Array.isArray(candidate.watchedVideoIds)) {
+    return {
+      ok: false,
+      error: 'Invalid backup file: "watchedVideoIds" must be an array.',
+    };
+  }
+  if (
+    'solvedProblemIds' in candidate &&
+    (typeof candidate.solvedProblemIds !== 'object' ||
+      candidate.solvedProblemIds === null ||
+      Array.isArray(candidate.solvedProblemIds))
+  ) {
+    return {
+      ok: false,
+      error: 'Invalid backup file: "solvedProblemIds" must be an object.',
+    };
+  }
+
+  return {
+    ok: true,
+    state: migrateProgressState(candidate, firstModuleId),
+  };
+}
+
 export function loadProgressFromStorage(firstModuleId: string): UserProgressState {
   const fallback = createInitialProgress(firstModuleId);
   if (typeof window === 'undefined') return fallback;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw =
+      window.localStorage.getItem(STORAGE_KEY) ??
+      LEGACY_STORAGE_KEYS.map((k) => window.localStorage.getItem(k)).find(Boolean) ??
+      null;
     if (!raw) return fallback;
-    const parsed = JSON.parse(raw) as Partial<UserProgressState>;
-    const validPace: PaceId =
-      parsed.paceId && parsed.paceId in PACE_CONFIGS ? parsed.paceId : fallback.paceId;
-    const validTrack: StartingTrack =
-      parsed.startingTrack && parsed.startingTrack in STARTING_TRACK_CONFIGS
-        ? parsed.startingTrack
-        : fallback.startingTrack;
-    const rawLastVid =
-      parsed.lastVideoByModule && typeof parsed.lastVideoByModule === 'object'
-        ? Object.fromEntries(
-            Object.entries(parsed.lastVideoByModule).filter(
-              ([k, v]) => typeof k === 'string' && typeof v === 'string'
-            )
-          )
-        : {};
-    return {
-      paceId: validPace,
-      startingTrack: validTrack,
-      startDateIso:
-        typeof parsed.startDateIso === 'string' && parsed.startDateIso.length === 10
-          ? parsed.startDateIso
-          : fallback.startDateIso,
-      completedModuleIds: Array.isArray(parsed.completedModuleIds)
-        ? parsed.completedModuleIds.filter((x): x is string => typeof x === 'string')
-        : [],
-      watchedVideoIds: Array.isArray(parsed.watchedVideoIds)
-        ? parsed.watchedVideoIds.filter((x): x is string => typeof x === 'string')
-        : [],
-      lastVideoByModule: rawLastVid,
-      solvedProblemIds:
-        parsed.solvedProblemIds && typeof parsed.solvedProblemIds === 'object'
-          ? parsed.solvedProblemIds
-          : {},
-      examHistory: Array.isArray(parsed.examHistory)
-        ? (parsed.examHistory as ExamAttemptRecord[])
-        : [],
-      activeModuleId:
-        typeof parsed.activeModuleId === 'string' && parsed.activeModuleId.length > 0
-          ? parsed.activeModuleId
-          : firstModuleId,
-    };
+    const parsed: unknown = JSON.parse(raw);
+    return migrateProgressState(parsed, firstModuleId);
   } catch {
     return fallback;
   }
@@ -472,7 +670,11 @@ export function loadProgressFromStorage(firstModuleId: string): UserProgressStat
 export function saveProgressToStorage(state: UserProgressState): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const versioned: UserProgressState = {
+      ...state,
+      schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
+    };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(versioned));
   } catch {
     // Ignore storage quota errors in restricted sandboxes
   }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, RotateCcw } from 'lucide-react';
 import { EXAM_TEMPLATES, selectProblemsForExam } from '../data/curriculum';
 import type {
   ExamAttemptRecord,
@@ -11,6 +11,7 @@ import {
   gradeExamSubmission,
   type ExamGradeReport,
 } from '../utils/courseProgress';
+import { buildMathErrorIssueUrl } from '../utils/issueLinks';
 import { MathTex } from './MathTex';
 
 interface DrillExamViewProps {
@@ -42,6 +43,7 @@ export function DrillExamView({
   const [report, setReport] = useState<ExamGradeReport | null>(null);
   const [confirmExit, setConfirmExit] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  const [shortcutsEnabled, setShortcutsEnabled] = useState(true);
 
   const isExamRunning = Boolean(activeTemplate && !report);
 
@@ -136,11 +138,22 @@ export function DrillExamView({
   }, [secondsLeft]);
 
   // Keyboard shortcuts during active exam (A-D / 1-4 select option, Left/Right navigate)
+  // Can be toggled off so single-character shortcuts never conflict with screen readers.
   useEffect(() => {
-    if (!activeTemplate || report || questions.length === 0) return;
+    if (!activeTemplate || report || questions.length === 0 || !shortcutsEnabled) return;
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.tagName === 'A' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
 
       const key = e.key.toLowerCase();
       const activeQ = questions[currentIdx];
@@ -165,23 +178,23 @@ export function DrillExamView({
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [activeTemplate, report, questions, currentIdx]);
+  }, [activeTemplate, report, questions, currentIdx, shortcutsEnabled]);
 
   // 1. Exam Selection Lobby
   if (!activeTemplate) {
     return (
       <main className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-10">
         <div className="space-y-2 max-w-3xl">
-          <div className="text-xs font-medium text-[#64748B]">
+          <div className="text-xs font-medium text-[#475569]">
             Timed Assessment Center · Stratified &amp; Shuffled on Every Attempt
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold text-[#0F172A] text-balance">
-            University Drill Exams &amp; Speed Blitzes
+            University Practice Exams &amp; Topic Drills
           </h1>
           <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-            Simulate real university readiness checks, midterms, and final exam pressure.
-            Questions are sampled evenly across every covered day with randomized choice
-            order so retakes always test real recall.
+            Test your understanding across readiness checks, midterms, and comprehensive
+            finals. Questions are sampled evenly across every covered module with
+            randomized choice order so retakes measure genuine recall.
           </p>
         </div>
 
@@ -198,7 +211,7 @@ export function DrillExamView({
                 className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 flex flex-col justify-between gap-6 hover:border-[#94A3B8] transition-colors"
               >
                 <div className="space-y-2.5">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B] font-mono-tabular">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[#475569] font-mono-tabular">
                     <span>{tpl.questionCount} questions</span>
                     <span aria-hidden="true">·</span>
                     <span>{tpl.durationMinutes} min</span>
@@ -236,7 +249,7 @@ export function DrillExamView({
             Recent Exam Scores
           </h2>
           {examHistory.length === 0 ? (
-            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 text-sm text-[#64748B]">
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 text-sm text-[#475569]">
               No completed exam attempts yet. Launch any assessment above to establish
               your baseline score.
             </div>
@@ -254,7 +267,7 @@ export function DrillExamView({
                   >
                     <div>
                       <div className="font-semibold text-[#0F172A]">{attempt.title}</div>
-                      <div className="text-xs text-[#64748B] font-mono-tabular">
+                      <div className="text-xs text-[#475569] font-mono-tabular">
                         Completed in {formatClock(attempt.durationSeconds)}
                       </div>
                     </div>
@@ -288,7 +301,7 @@ export function DrillExamView({
         <section className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 space-y-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-1">
-              <div className="text-xs font-medium text-[#64748B]">
+              <div className="text-xs font-medium text-[#475569]">
                 Graded Report · {activeTemplate.title}
               </div>
               <h1 className="font-display text-3xl font-semibold text-[#0F172A]">
@@ -327,17 +340,17 @@ export function DrillExamView({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-[#E2E8F0]">
-            {report.byCourse.prealg.total > 0 && (
+            {report.byCourse.precalc.total > 0 && (
               <div className="p-4 bg-[#F8FAFC] rounded-lg font-mono-tabular">
-                <div className="text-xs text-[#64748B] font-sans">Pre-Algebra Accuracy</div>
+                <div className="text-xs text-[#475569] font-sans">Precalculus Prep Accuracy</div>
                 <div className="text-lg font-semibold text-[#0F172A] mt-1">
-                  {report.byCourse.prealg.correct}/{report.byCourse.prealg.total} correct
+                  {report.byCourse.precalc.correct}/{report.byCourse.precalc.total} correct
                 </div>
               </div>
             )}
             {report.byCourse.calc1.total > 0 && (
               <div className="p-4 bg-[#F8FAFC] rounded-lg font-mono-tabular">
-                <div className="text-xs text-[#64748B] font-sans">Calculus I Accuracy</div>
+                <div className="text-xs text-[#475569] font-sans">Calculus I Accuracy</div>
                 <div className="text-lg font-semibold text-[#0F172A] mt-1">
                   {report.byCourse.calc1.correct}/{report.byCourse.calc1.total} correct
                 </div>
@@ -345,7 +358,7 @@ export function DrillExamView({
             )}
             {report.byCourse.calc2.total > 0 && (
               <div className="p-4 bg-[#F8FAFC] rounded-lg font-mono-tabular">
-                <div className="text-xs text-[#64748B] font-sans">Calculus II Accuracy</div>
+                <div className="text-xs text-[#475569] font-sans">Calculus II Accuracy</div>
                 <div className="text-lg font-semibold text-[#0F172A] mt-1">
                   {report.byCourse.calc2.correct}/{report.byCourse.calc2.total} correct
                 </div>
@@ -381,17 +394,33 @@ export function DrillExamView({
                     key={prob.id}
                     className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-3"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748B]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#475569]">
                       <span>
                         {formatCourseTrackName(prob.course)} · {prob.topicTag}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => onJumpToModule(prob.moduleId)}
-                        className="text-[#1D4ED8] hover:underline font-medium cursor-pointer"
-                      >
-                        Open Source Lesson
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <a
+                          href={buildMathErrorIssueUrl({
+                            itemId: prob.id,
+                            itemLabel: prob.topicTag,
+                            kind: 'problem',
+                            context: activeTemplate.title,
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium"
+                        >
+                          <Flag className="w-3 h-3" />
+                          <span>Report an error</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => onJumpToModule(prob.moduleId)}
+                          className="text-[#1D4ED8] hover:underline font-medium cursor-pointer"
+                        >
+                          Open Source Lesson
+                        </button>
+                      </div>
                     </div>
                     <p className="text-sm font-medium text-[#0F172A]">{prob.prompt}</p>
                     <div className="px-4 py-3 bg-[#F8FAFC] rounded-lg">
@@ -496,7 +525,7 @@ export function DrillExamView({
             )}
 
             <div>
-              <div className="text-xs text-[#64748B]">{activeTemplate.title}</div>
+              <div className="text-xs text-[#475569]">{activeTemplate.title}</div>
               <div className="text-sm font-semibold text-[#0F172A] font-mono-tabular">
                 Question {currentIdx + 1} of {questions.length} · {answeredCount} answered
               </div>
@@ -553,10 +582,24 @@ export function DrillExamView({
 
       {/* Question Card */}
       <section className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#64748B]">
+        <div className="flex items-center justify-between gap-3 text-xs text-[#475569]">
           <span>
             {formatCourseTrackName(activeQ.course)} · {activeQ.topicTag} · {activeQ.difficulty}
           </span>
+          <a
+            href={buildMathErrorIssueUrl({
+              itemId: activeQ.id,
+              itemLabel: activeQ.topicTag,
+              kind: 'problem',
+              context: activeTemplate.title,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[#475569] hover:text-[#1D4ED8] font-medium whitespace-nowrap"
+          >
+            <Flag className="w-3 h-3" />
+            <span>Report an error</span>
+          </a>
         </div>
 
         <p className="text-base font-medium text-[#0F172A]">{activeQ.prompt}</p>
@@ -647,8 +690,24 @@ export function DrillExamView({
             );
           })}
         </div>
-        <div className="text-[11px] text-[#64748B] font-mono-tabular hidden sm:block">
-          Keyboard shortcuts: A–D (or 1–4) select answer · ← / → switch questions
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          Question {currentIdx + 1} of {questions.length}: {activeQ.topicTag}.{' '}
+          {answers[activeQ.id] ? `Selected option ${answers[activeQ.id]}.` : 'Not yet answered.'}
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-[#E2E8F0]">
+          <div className="text-xs text-[#475569] font-mono-tabular">
+            {shortcutsEnabled
+              ? 'Keyboard shortcuts on: A–D (or 1–4) select answer · ← / → switch questions'
+              : 'Single-key shortcuts paused (screen-reader safe mode)'}
+          </div>
+          <button
+            type="button"
+            aria-pressed={shortcutsEnabled}
+            onClick={() => setShortcutsEnabled((prev) => !prev)}
+            className="px-2.5 py-1 text-xs font-medium text-[#334155] bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#CBD5E1] rounded-md cursor-pointer"
+          >
+            Keyboard shortcuts: {shortcutsEnabled ? 'On' : 'Off'}
+          </button>
         </div>
       </div>
     </main>

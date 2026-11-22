@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowRight,
   BookOpen,
   CheckCircle2,
@@ -11,6 +12,7 @@ import {
   Maximize2,
   Minimize2,
   PlayCircle,
+  RefreshCw,
 } from 'lucide-react';
 import type { ExternalResource, VideoLecture } from '../types/course';
 import {
@@ -62,6 +64,12 @@ export function VideoCourseTheater({
     return firstUnwatched?.id ?? videos[0]?.id ?? '';
   }, [savedVideoId, videos, watchedSet]);
 
+  const [embedFallbackOpen, setEmbedFallbackOpen] = useState(false);
+
+  useEffect(() => {
+    setEmbedFallbackOpen(false);
+  }, [activeVideoId]);
+
   useEffect(() => {
     if (activeVideoId && activeVideoId !== savedVideoId) {
       onSelectVideoId(activeVideoId);
@@ -69,8 +77,14 @@ export function VideoCourseTheater({
   }, [activeVideoId, savedVideoId, onSelectVideoId]);
 
   const scrollPlayerIntoView = () => {
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.requestAnimationFrame(() => {
-      stageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      stageRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
     });
   };
 
@@ -104,6 +118,16 @@ export function VideoCourseTheater({
   const activeDuration = formatDurationPair(estimateVideoDurationMinutes(activeVideo));
   const embedUrl = `https://www.youtube-nocookie.com/embed/${activeVideo.youtubeId}?rel=0`;
   const watchOnYoutubeUrl = `https://www.youtube.com/watch?v=${activeVideo.youtubeId}`;
+  const playlistResource = externalResources.find((r) => r.resourceKind === 'playlist');
+  const playlistUrl =
+    playlistResource?.url ??
+    (activeVideo.instructor === '3Blue1Brown'
+      ? 'https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr'
+      : activeVideo.lectureCode.startsWith('Precalculus Prep')
+        ? 'https://www.youtube.com/playlist?list=PLDesaqWTN6ESsmwELdrzhcGiRhk5DjwLP'
+        : activeVideo.lectureCode.startsWith('Calc 1')
+          ? 'https://www.youtube.com/playlist?list=PLF797E961509B4EB5'
+          : 'https://www.youtube.com/playlist?list=PLDesaqWTN6EQ2J4vgsN1HyBeRADEh4Cw-');
 
   const handleCompleteAndNext = () => {
     if (!isActiveWatched) {
@@ -118,23 +142,77 @@ export function VideoCourseTheater({
 
   return (
     <div className="space-y-6">
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        Loaded lecture {activeIndex + 1} of {videos.length}: {activeVideo.instructor},{' '}
+        {activeVideo.title}.
+      </div>
       {/* Full-Width Cinema Video Stage */}
       <section
         ref={stageRef}
+        aria-label="Video lecture stage"
         className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl overflow-hidden scroll-mt-20"
       >
         {/* Large 16:9 Cinema Canvas (scales up to full width, capped cleanly at 74vh so controls remain visible) */}
         <div className="w-full bg-[#0B1120] flex justify-center">
           <div className="relative w-full aspect-video max-h-[74vh]">
-            <iframe
-              key={activeVideo.youtubeId}
-              src={embedUrl}
-              title={`${activeVideo.instructor}: ${activeVideo.title}`}
-              className="absolute inset-0 w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
+            {!embedFallbackOpen ? (
+              <iframe
+                key={activeVideo.youtubeId}
+                src={embedUrl}
+                title={`${activeVideo.instructor}: ${activeVideo.title}`}
+                onError={() => setEmbedFallbackOpen(true)}
+                className="absolute inset-0 w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            ) : (
+              <div
+                role="region"
+                aria-label="Video embed fallback"
+                className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10 text-center bg-[#0F172A] text-[#F8FAFC] space-y-4"
+              >
+                <AlertTriangle className="w-8 h-8 text-[#FBBF24]" />
+                <div className="space-y-1.5 max-w-lg">
+                  <h3 className="font-display text-lg sm:text-xl font-semibold text-white">
+                    Embedded Player Unavailable
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#CBD5E1] leading-relaxed">
+                    YouTube embeds can be blocked by school/corporate firewalls, privacy
+                    extensions, or offline mode. Open this lecture directly on YouTube or
+                    browse the full course playlist instead.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                  <a
+                    href={watchOnYoutubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#1D4ED8] hover:bg-[#1E40AF] rounded-lg"
+                  >
+                    <span>Watch Directly on YouTube</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href={playlistUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#F8FAFC] bg-[#1E293B] hover:bg-[#334155] border border-[#475569] rounded-lg"
+                  >
+                    <span>Open Full Course Playlist</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFallbackOpen(false)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-[#CBD5E1] hover:text-white border border-[#475569] rounded-lg cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Retry Embed</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -142,7 +220,7 @@ export function VideoCourseTheater({
         <div className="p-5 sm:p-6 space-y-5">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B]">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[#475569]">
                 <span className="font-semibold text-[#1D4ED8]">
                   {activeVideo.instructor}
                 </span>
@@ -243,6 +321,14 @@ export function VideoCourseTheater({
                 <span>YouTube</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
+
+              <button
+                type="button"
+                onClick={() => setEmbedFallbackOpen((prev) => !prev)}
+                className="inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-[#475569] hover:text-[#1D4ED8] bg-[#F8FAFC] hover:bg-[#EFF6FF] border border-[#CBD5E1] rounded-lg whitespace-nowrap cursor-pointer"
+              >
+                <span>{embedFallbackOpen ? 'Show Player' : 'Video Not Loading?'}</span>
+              </button>
             </div>
           </div>
 
@@ -257,7 +343,7 @@ export function VideoCourseTheater({
             </div>
             <div>
               <div className="text-xs font-semibold text-[#1D4ED8] mb-1">
-                Fastest-Path Watch Strategy
+                Active Viewing Strategy
               </div>
               <p className="text-sm text-[#475569] leading-relaxed">
                 {activeVideo.watchStrategy}
@@ -280,7 +366,7 @@ export function VideoCourseTheater({
                 {watchedInModule}/{videos.length} watched
               </span>
             </h3>
-            <p className="text-xs text-[#64748B] mt-0.5">
+            <p className="text-xs text-[#475569] mt-0.5">
               Select any lecture below to load it and jump straight to the cinema player.
             </p>
           </div>
@@ -338,13 +424,13 @@ export function VideoCourseTheater({
                     ) : (
                       <PlayCircle
                         className={`w-4 h-4 ${
-                          isSelected ? 'text-[#1D4ED8]' : 'text-[#64748B]'
+                          isSelected ? 'text-[#1D4ED8]' : 'text-[#475569]'
                         }`}
                       />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center justify-between gap-2 text-[11px] text-[#64748B] font-mono-tabular">
+                    <div className="flex items-center justify-between gap-2 text-[11px] text-[#475569] font-mono-tabular">
                       <span className="truncate">
                         0{idx + 1} · {vid.instructor}
                       </span>
@@ -359,7 +445,7 @@ export function VideoCourseTheater({
                     >
                       {vid.title}
                     </div>
-                    <div className="text-[11px] font-mono-tabular text-[#64748B]">
+                    <div className="text-[11px] font-mono-tabular text-[#475569]">
                       {vid.lectureCode} · {dur.fast15x}
                     </div>
                   </div>
@@ -379,7 +465,7 @@ export function VideoCourseTheater({
               University Readings &amp; Problem Archives for {moduleLabel}
             </h3>
           </div>
-          <span className="text-xs text-[#64748B] hidden sm:inline">
+          <span className="text-xs text-[#475569] hidden sm:inline">
             OpenStax theory · Paul&rsquo;s Notes exercises
           </span>
         </div>
@@ -403,7 +489,7 @@ export function VideoCourseTheater({
                   <div className="text-[11px] font-medium text-[#1D4ED8]">
                     {res.provider}
                     {kindLabel && (
-                      <span className="text-[#64748B]"> · {kindLabel}</span>
+                      <span className="text-[#475569]"> · {kindLabel}</span>
                     )}
                   </div>
                   <div className="text-sm font-semibold text-[#0F172A] group-hover:text-[#1D4ED8] leading-snug">

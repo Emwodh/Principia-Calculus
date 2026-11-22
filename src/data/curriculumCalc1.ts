@@ -39,7 +39,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'The Squeeze (Sandwich) Theorem & Fundamental Trig Limits',
         statement:
-          'If g(x) ≤ f(x) ≤ h(x) near a and both outer functions approach L, then f(x) is trapped and must also approach L.',
+          'If g(x) ≤ f(x) ≤ h(x) for all x in an open interval around a (except possibly at a itself) and lim_{x→a} g(x) = lim_{x→a} h(x) = L, then lim_{x→a} f(x) = L.',
         formulaTex: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1 \\qquad \\text{and} \\qquad \\lim_{x \\to 0} \\frac{1 - \\cos x}{x} = 0',
         intuition:
           'Whenever you see x² sin(1/x) or oscillating terms, bound sine/cosine between -1 and 1 and watch the outer envelope collapse to 0.',
@@ -48,7 +48,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Continuity & Intermediate Value Theorem (IVT)',
         statement:
-          'A function f is continuous at c if f(c) is defined, the two-sided limit exists, and both match. If f is continuous on [a, b], it hits every height between f(a) and f(b).',
+          'A function f is continuous at c if f(c) is defined, lim_{x→c} f(x) exists, and both match. If f is continuous on the closed interval [a, b] and N lies between f(a) and f(b) (with f(a) ≠ f(b)), then there exists c ∈ (a, b) with f(c) = N.',
         formulaTex: '\\lim_{x \\to c} f(x) = f(c)',
         intuition:
           'IVT is the standard proof tool for showing an equation has at least one root on [a, b]: just check that f(a) and f(b) have opposite signs.',
@@ -206,7 +206,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Product, Quotient & Chain Rules',
         statement:
-          'Complex functions decompose into products, ratios, and nested compositions.',
+          'For differentiable functions f and g (with g(x) ≠ 0 in the Quotient Rule, and f differentiable at g(x) in the Chain Rule):',
         formulaTex: '(fg)\' = f\'g + fg\' \\qquad \\left(\\frac{f}{g}\\right)\' = \\frac{f\'g - fg\'}{g^2} \\qquad \\frac{d}{dx}\\big[f(g(x))\\big] = f\'(g(x))\\cdot g\'(x)',
         intuition:
           'Think of the Chain Rule as peeling an onion from outside to inside: differentiate the outer shell while keeping the inside untouched, then multiply by the derivative of the inside.',
@@ -214,7 +214,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Logarithmic Differentiation',
         statement:
-          'For variable-exponent functions y = f(x)^{g(x)}, take ln of both sides first to convert exponentiation into multiplication.',
+          'For variable-exponent functions y = f(x)^{g(x)} with f(x) > 0 and f, g differentiable, take ln of both sides first to convert exponentiation into multiplication.',
         formulaTex: '\\ln y = g(x)\\ln f(x) \\implies \\frac{y\'}{y} = g\'(x)\\ln f(x) + g(x)\\frac{f\'(x)}{f(x)}',
         intuition:
           'Never apply the power rule (d/dx x^n) or exponential rule (d/dx a^x) to x^x—both fail because neither base nor exponent is constant.',
@@ -288,7 +288,7 @@ export const CALC1_MODULES: CourseModule[] = [
         course: 'calc1',
         topicTag: 'Chain Rule',
         difficulty: 'Core',
-        prompt: 'Find the derivative of:',
+        prompt: 'Find the derivative of (where sec x + tan x > 0):',
         promptTex: 'f(x) = \\ln\\left(\\sec x + \\tan x\\right)',
         options: [
           { id: 'a', labelTex: '\\sec x' },
@@ -347,8 +347,9 @@ export const CALC1_MODULES: CourseModule[] = [
     course: 'calc1',
     phase: 'Phase 1 · Calculus I Foundations',
     title: 'Extrema, L’Hôpital’s Rule, Related Rates & Optimization',
-    subtitle: 'Turn derivatives into a precision problem-solving weapon for curves, limits, and physical rates.',
-    estimatedMinutes: 140,
+    subtitle:
+      'Turn derivatives into a problem-solving toolkit for curves, limits, and physical rates. Heavy module — recommended across 2 sessions (Session A: MVT, Extrema & L’Hôpital; Session B: Related Rates & Optimization).',
+    estimatedMinutes: 180,
     labType: 'extrema',
     labTitle: 'f(x), f′(x) & f″(x) Curve Anatomy Explorer',
     labObjective:
@@ -361,9 +362,8 @@ export const CALC1_MODULES: CourseModule[] = [
     ],
     prerequisites: ['Day 2 Differentiation Rules'],
     studySprintChecklist: [
-      'Explore f, f′, and f″ together in the Curve Anatomy Lab to lock in visual intuition.',
-      'Master converting 0·∞ and 1^∞ indeterminate forms into 0/0 or ∞/∞ before L’Hôpital.',
-      'Follow the 4-step Related Rates template: Draw → Relate → Differentiate w.r.t. t → Substitute.',
+      'Session A (90 min): Explore f, f′, and f″ in the Curve Anatomy Lab, review MVT, and practice converting 0·∞ and 1^∞ forms before applying L’Hôpital.',
+      'Session B (90 min): Follow the 4-step Related Rates template (Draw → Relate → Differentiate w.r.t. t → Substitute) and work Closed-Interval Optimization problems.',
       'Check endpoints AND critical points on every closed-interval optimization problem.',
     ],
     theorems: [
@@ -378,7 +378,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'L’Hôpital’s Rule',
         statement:
-          'If lim_{x→a} f(x)/g(x) produces 0/0 or ±∞/±∞ and the ratio of derivatives has a limit, then both limits are equal.',
+          'If f and g are differentiable on an open interval around a (except possibly at a) with g′(x) ≠ 0 near a, lim_{x→a} f(x)/g(x) has the form 0/0 or ±∞/±∞, and lim_{x→a} f′(x)/g′(x) exists (or is ±∞), then both limits are equal.',
         formulaTex: "\\lim_{x \\to a} \\frac{f(x)}{g(x)} = \\lim_{x \\to a} \\frac{f'(x)}{g'(x)}",
         intuition:
           'Near a tie (0/0 or ∞/∞), whichever function grows faster wins the race—and derivatives measure growth rate.',
@@ -387,7 +387,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Closed-Interval Optimization & Second Derivative Test',
         statement:
-          'Absolute extrema on [a, b] occur only at critical points (f′(c) = 0 or DNE) or endpoints a, b. At a stationary point f′(c) = 0: f″(c) > 0 gives a local min; f″(c) < 0 gives a local max.',
+          'If f is continuous on a closed interval [a, b], absolute extrema exist (Extreme Value Theorem) and occur only at interior critical points (f′(c) = 0 or DNE) or endpoints a, b. If f″ is continuous near a stationary point f′(c) = 0: f″(c) > 0 gives a local min; f″(c) < 0 gives a local max (f″(c) = 0 is inconclusive).',
         formulaTex: "f'(c) = 0 \\;\\land\\; f''(c) > 0 \\implies \\text{Local Min} \\qquad f'(c) = 0 \\;\\land\\; f''(c) < 0 \\implies \\text{Local Max}",
         intuition:
           'Positive second derivative means concave up (like a cup holding water at the bottom = minimum).',
@@ -542,7 +542,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Fundamental Theorem of Calculus (Part I & Part II)',
         statement:
-          'Differentiation and integration are inverse operations. Part I differentiates an accumulation function; Part II evaluates any definite integral via an antiderivative F.',
+          'Part I: If f is continuous on an interval containing a and the range of differentiable g, then differentiating the accumulation function yields f(g(x))·g′(x). Part II: If f is continuous on [a, b] and F′ = f on [a, b], then ∫_a^b f(x) dx = F(b) − F(a).',
         formulaTex: '\\frac{d}{dx}\\int_{a}^{g(x)} f(t)\\,dt = f(g(x))\\cdot g\'(x) \\qquad \\text{and} \\qquad \\int_{a}^{b} f(x)\\,dx = F(b) - F(a)',
         intuition:
           'Accumulating tiny slices of rate of change f′(x) dx from a to b gives the exact net change F(b) - F(a).',
@@ -550,7 +550,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Change of Variables (u-Substitution)',
         statement:
-          'The reverse of the Chain Rule: identify an inner function u = g(x) whose derivative g′(x) dx appears as a factor inside the integral.',
+          'If g′ is continuous on [a, b] and f is continuous on the range of u = g(x), then changing variables reverses the Chain Rule:',
         formulaTex: '\\int_{a}^{b} f(g(x))\\,g\'(x)\\,dx = \\int_{g(a)}^{g(b)} f(u)\\,du',
         intuition:
           'Transforming the bounds a → g(a) and b → g(b) saves time and eliminates back-substitution errors on exams.',
@@ -700,7 +700,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Disk & Washer Method (Perpendicular Slicing)',
         statement:
-          'When rotating the region between outer radius R(x) and inner radius r(x) around a horizontal axis:',
+          'When rotating the region bounded by continuous outer radius R(x) and inner radius r(x) with R(x) ≥ r(x) ≥ 0 on [a, b] around a horizontal axis:',
         formulaTex: 'V = \\pi \\int_{a}^{b} \\Big([R(x)]^2 - [r(x)]^2\\Big)\\,dx',
         intuition:
           'Always compute R² − r², NEVER (R − r)². A washer is a big disk minus a hole.',
@@ -708,7 +708,7 @@ export const CALC1_MODULES: CourseModule[] = [
       {
         title: 'Cylindrical Shell Method (Parallel Slicing)',
         statement:
-          'When rotating a vertical strip at x of height h(x) around the y-axis (or vertical line x = c):',
+          'When rotating the region under continuous f(x) ≥ 0 on [a, b] (with 0 ≤ a < b) around the y-axis (or vertical line x = c using radius |x − c|):',
         formulaTex: 'V = 2\\pi \\int_{a}^{b} (\\text{radius})\\cdot(\\text{height})\\,dx = 2\\pi \\int_{a}^{b} x\\,f(x)\\,dx',
         intuition:
           'Unroll a thin soup-can label: circumference 2πr × height h × thickness dx. Shells rescue you when solving for x in terms of y is impossible!',

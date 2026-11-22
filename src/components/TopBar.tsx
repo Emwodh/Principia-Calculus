@@ -14,6 +14,7 @@ const NAV_ITEMS: { id: NavView; label: string }[] = [
   { id: 'studio', label: 'Study Studio' },
   { id: 'exam', label: 'Drill Exam' },
   { id: 'formulas', label: 'Formula Vault' },
+  { id: 'about', label: 'About' },
 ];
 
 export function TopBar({
@@ -38,7 +39,7 @@ export function TopBar({
           onClick={() => handleNavClick('plan')}
           className="font-display text-xl font-semibold tracking-tight text-[#0F172A] whitespace-nowrap shrink-0 cursor-pointer hover:text-[#1D4ED8] transition-colors"
         >
-          Principia Calculus
+          CalcAtlas
         </button>
 
         {/* Zone 2: 4 concise single-line nav links */}

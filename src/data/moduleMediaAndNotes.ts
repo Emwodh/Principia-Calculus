@@ -18,7 +18,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa1-1',
         youtubeId: '9OOrhA2iKak',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 01',
+        lectureCode: 'Precalculus Prep · Video 01',
         title: 'Intro to Precalculus (College Algebra 1)',
         focusSummary:
           'Roadmap of the algebraic and trigonometric foundations required to thrive in university Calculus I and II.',
@@ -29,7 +29,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa1-2',
         youtubeId: 'FkUEsP9efFg',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 02',
+        lectureCode: 'Precalculus Prep · Video 02',
         title: 'Introduction to Functions (College Algebra 2)',
         focusSummary:
           'Rigorous definition of functions, relations, inputs/outputs, and reading function notation f(x) accurately.',
@@ -40,7 +40,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa1-3',
         youtubeId: 'LvUCDcp6Z3k',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 04',
+        lectureCode: 'Precalculus Prep · Video 04',
         title: 'Finding the Domain of Functions (College Algebra 4)',
         focusSummary:
           'Step-by-step method for finding implied domains of rational, radical, and combined functions in interval notation.',
@@ -51,18 +51,18 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa1-4',
         youtubeId: '6897XAx3O9Q',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 08',
+        lectureCode: 'Precalculus Prep · Video 08',
         title: 'Properties of Functions — Even vs Odd (College Algebra 8)',
         focusSummary:
           'Algebraic symmetry tests f(−x) = f(x) and f(−x) = −f(x) alongside geometric y-axis and origin symmetry.',
         watchStrategy:
-          'Fast high-ROI lesson—symmetry shortcuts cut definite integrals in half later in Calculus I.',
+          'High-value foundation—recognizing even and odd symmetry simplifies definite integrals across symmetric intervals later in Calculus I.',
       },
       {
         id: 'vid-pa1-5',
         youtubeId: 'H5Y-ONkezDM',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 11',
+        lectureCode: 'Precalculus Prep · Video 11',
         title: 'Average Rate of Change of a Function (College Algebra 11)',
         focusSummary:
           'Secant slope [f(b) − f(a)] / (b − a) and simplifying the difference quotient—the direct algebraic gateway to derivatives.',
@@ -73,7 +73,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa1-6',
         youtubeId: 'HkrMJLSpJFI',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 15',
+        lectureCode: 'Precalculus Prep · Video 15',
         title: 'How to Graph with Transformations (College Algebra 15)',
         focusSummary:
           'Combining shifts, reflections, and stretches on parent functions without plotting tables of points.',
@@ -104,7 +104,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         resourceKind: 'playlist',
         url: 'https://www.youtube.com/playlist?list=PLDesaqWTN6ESsmwELdrzhcGiRhk5DjwLP',
         description:
-          'Full 100-lecture Pre-Algebra / College Algebra & Trigonometry playlist on YouTube if you want every bonus walkthrough.',
+          'Full 100-lecture Precalculus / College Algebra & Trigonometry playlist on YouTube if you want every bonus walkthrough.',
       },
     ],
   },
@@ -115,18 +115,18 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa2-1',
         youtubeId: 'pYSYL_vy6YQ',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 19',
+        lectureCode: 'Precalculus Prep · Video 19',
         title: 'Completing the Square Made Easy (College Algebra 19)',
         focusSummary:
           'Converting ax² + bx + c into vertex form cleanly—essential for both quadratics and Calculus II trig-sub/arctan integrals.',
         watchStrategy:
-          'Watch carefully when leading coefficient a ≠ 1; balancing the outside constant is the #1 exam trap.',
+          'Watch carefully when leading coefficient a ≠ 1; balancing the outside constant is the most common algebra pitfall.',
       },
       {
         id: 'vid-pa2-2',
         youtubeId: '2BUg_w1Cu9E',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 20',
+        lectureCode: 'Precalculus Prep · Video 20',
         title: 'Proving the Quadratic Formula — Twice (College Algebra 20)',
         focusSummary:
           'Derives the Quadratic Formula directly from completing the square so you never rely on rote memorization.',
@@ -137,7 +137,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa2-3',
         youtubeId: 'Gxh-mEt1K-o',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 29',
+        lectureCode: 'Precalculus Prep · Video 29',
         title: 'Multiplicity and End Behavior of Polynomials (College Algebra 29)',
         focusSummary:
           'Leading-term end behavior plus how odd vs. even root multiplicity makes a curve cross or bounce at the x-axis.',
@@ -148,7 +148,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa2-4',
         youtubeId: 'AKJgo-WR_K4',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 32',
+        lectureCode: 'Precalculus Prep · Video 32',
         title: 'Synthetic Division and Long Division of Polynomials (College Algebra 32)',
         focusSummary:
           'Long division for any divisor and rapid synthetic division for linear divisors (x − c), plus missing-term 0 placeholders.',
@@ -159,7 +159,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa2-5',
         youtubeId: 'xuhk2kSVwe0',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 37',
+        lectureCode: 'Precalculus Prep · Video 37',
         title: 'Finding ALL Solutions of Polynomials (College Algebra 37)',
         focusSummary:
           'Combines Rational Zeros Theorem, synthetic division, and complex conjugate pairs to completely factor higher-degree polynomials.',
@@ -201,7 +201,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa3-1',
         youtubeId: 'y-bSJaEonho',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 38',
+        lectureCode: 'Precalculus Prep · Video 38',
         title: 'Finding Vertical Asymptotes of Rational Functions (College Algebra 38)',
         focusSummary:
           'Factoring denominators to isolate vertical asymptotes and reading infinite behavior from both sides.',
@@ -212,7 +212,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa3-2',
         youtubeId: 'D-H9N-_Y77Y',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 40',
+        lectureCode: 'Precalculus Prep · Video 40',
         title: 'Finding a Horizontal Asymptote of a Rational Function (College Algebra 40)',
         focusSummary:
           'Comparing numerator and denominator degrees (n < m, n = m, n > m) to determine exact horizontal end behavior.',
@@ -223,7 +223,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa3-3',
         youtubeId: 'NVhaVk4wNu8',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 41',
+        lectureCode: 'Precalculus Prep · Video 41',
         title: 'Finding an Oblique Asymptote of a Rational Function (College Algebra 41)',
         focusSummary:
           'Using polynomial long division whenever deg(P) = deg(Q) + 1 to extract the slant asymptote y = mx + b.',
@@ -234,7 +234,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa3-4',
         youtubeId: 'tyXWPcvSQvk',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 43',
+        lectureCode: 'Precalculus Prep · Video 43',
         title: 'Finding Asymptotes and Holes of Rational Functions (College Algebra 43)',
         focusSummary:
           'Complete workflow separating canceled factors (removable holes) from surviving denominator roots (vertical asymptotes).',
@@ -245,10 +245,10 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa3-5',
         youtubeId: 'QSh1xcbYKZk',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 47',
+        lectureCode: 'Precalculus Prep · Video 47',
         title: 'Inequalities with Rational Functions (College Algebra 47)',
         focusSummary:
-          'Constructing clean number-line sign charts for N(x)/D(x) ≥ 0 without falling into the cross-multiplication trap.',
+          'Constructing clean number-line sign charts for N(x)/D(x) ≥ 0 without falling into the sign-flipping cross-multiplication pitfall.',
         watchStrategy:
           'Master this sign-chart method—it is identical to the First & Second Derivative Tests in Calculus I.',
       },
@@ -287,7 +287,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-1',
         youtubeId: 'EsgHKmLSPVc',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 48',
+        lectureCode: 'Precalculus Prep · Video 48',
         title: 'Composition of Functions (College Algebra 48)',
         focusSummary:
           'Evaluating (f ∘ g)(x) = f(g(x)) and decomposing nested expressions into inner and outer layers.',
@@ -298,7 +298,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-2',
         youtubeId: 'fK7IPeeZoFE',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 51',
+        lectureCode: 'Precalculus Prep · Video 51',
         title: 'Finding Inverse Functions (College Algebra 51)',
         focusSummary:
           'Algebraic inversion workflow (swap x and y, solve for y) plus domain/range reversal for rational and radical functions.',
@@ -309,7 +309,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-3',
         youtubeId: '2w14jBb0e9Q',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 52',
+        lectureCode: 'Precalculus Prep · Video 52',
         title: 'Graphs of Exponential Functions (College Algebra 52)',
         focusSummary:
           'Growth vs. decay curves bˣ, horizontal asymptote y = 0, and why natural base e sits at the center of calculus.',
@@ -320,7 +320,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-4',
         youtubeId: 'u0uScdsBPfk',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 58',
+        lectureCode: 'Precalculus Prep · Video 58',
         title: 'Properties of Logarithms (College Algebra 58)',
         focusSummary:
           'Product, quotient, and power laws of logarithms—turning multiplication and powers into simple addition and scaling.',
@@ -331,7 +331,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-5',
         youtubeId: 'jNUyVClUQfc',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 63',
+        lectureCode: 'Precalculus Prep · Video 63',
         title: 'Solving Logarithmic Equations with Exponentials (College Algebra 63)',
         focusSummary:
           'Condensing logs to one term, rewriting in exponential form, and catching extraneous roots outside the log domain.',
@@ -342,7 +342,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa4-6',
         youtubeId: 'rDcLCA2W-UI',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 64',
+        lectureCode: 'Precalculus Prep · Video 64',
         title: 'Solving Exponential Equations with Logarithms (College Algebra 64)',
         focusSummary:
           'Using ln on both sides to pull variables out of exponents and solve exact university-style exponential equations.',
@@ -384,7 +384,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa5-1',
         youtubeId: 'EWd_FtOfyPc',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 03',
+        lectureCode: 'Precalculus Prep · Trig 03',
         title: 'Introduction to Radians (Precalculus — Trigonometry 3)',
         focusSummary:
           'Geometric meaning of radian measure, why π = 180°, and thinking natively in fractions of π.',
@@ -395,7 +395,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa5-2',
         youtubeId: '__nefjOhVks',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 06',
+        lectureCode: 'Precalculus Prep · Trig 06',
         title: 'Trigonometric Functions and the Unit Circle (Trigonometry 6)',
         focusSummary:
           'Building the entire unit circle from 30-60-90 and 45-45-90 triangles and defining all six trig functions from (x, y).',
@@ -406,7 +406,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa5-3',
         youtubeId: 'GdRZfemxTFI',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 07',
+        lectureCode: 'Precalculus Prep · Trig 07',
         title: 'How to Use the Unit Circle in Trigonometry (Trigonometry 7)',
         focusSummary:
           'Rapid exact evaluation of sin, cos, tan, sec, csc, cot at negative angles, large angles, and all four quadrants.',
@@ -417,7 +417,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa5-4',
         youtubeId: '3HHgZopzL_s',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 11',
+        lectureCode: 'Precalculus Prep · Trig 11',
         title: 'The Graphs of Sine and Cosine (Trigonometry 11)',
         focusSummary:
           'Unwrapping the unit circle into periodic sine and cosine waves with amplitude, period 2π/|B|, and key quarter-points.',
@@ -428,7 +428,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa5-5',
         youtubeId: '8eMEBrPYJ0I',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 13',
+        lectureCode: 'Precalculus Prep · Trig 13',
         title: 'How to Graph Tangent and Cotangent (Trigonometry 13)',
         focusSummary:
           'Period π behavior and exact vertical asymptote locations of tan(x) and cot(x)—crucial for limits and arctan.',
@@ -470,7 +470,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-1',
         youtubeId: 'ih01YszlraY',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 17',
+        lectureCode: 'Precalculus Prep · Trig 17',
         title: 'Introduction to Inverse Trigonometric Functions (Trigonometry 17)',
         focusSummary:
           'Why sin, cos, and tan domains must be restricted and how arcsin, arccos, and arctan principal ranges work.',
@@ -481,7 +481,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-2',
         youtubeId: 'hBk7OnEYPcw',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 22',
+        lectureCode: 'Precalculus Prep · Trig 22',
         title: 'How to Solve Trigonometric Equations (Trigonometry 22)',
         focusSummary:
           'Factoring trig quadratics, using Pythagorean swaps, and finding all solutions on [0, 2π) for multiple angles like 2x.',
@@ -492,7 +492,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-3',
         youtubeId: 'az_veh1FLbo',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 24',
+        lectureCode: 'Precalculus Prep · Trig 24',
         title: 'How to Prove Trigonometric Identities (Trigonometry 24)',
         focusSummary:
           'Strategic identity manipulation: working one side, converting to sine/cosine, common denominators, and conjugates.',
@@ -503,7 +503,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-4',
         youtubeId: '9R5Nz1eYddM',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 25',
+        lectureCode: 'Precalculus Prep · Trig 25',
         title: 'Introduction to Sum and Difference Formulas (Trigonometry 25)',
         focusSummary:
           'Deriving and applying sin(α ± β) and cos(α ± β)—the parent formulas behind double-angle and half-angle identities.',
@@ -514,7 +514,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-5',
         youtubeId: 'Epa2mi8hzBA',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Trig 27',
+        lectureCode: 'Precalculus Prep · Trig 27',
         title: 'Proving the Double and Half Angle Formulas (Trigonometry 27)',
         focusSummary:
           'Proof of sin(2θ), cos(2θ), and the power-reducing formulas sin²θ = (1 − cos 2θ)/2 and cos²θ = (1 + cos 2θ)/2.',
@@ -525,7 +525,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         id: 'vid-pa6-6',
         youtubeId: 'Ipz9xXeoaRc',
         instructor: 'Professor Leonard',
-        lectureCode: 'Pre-Algebra · Video 68',
+        lectureCode: 'Precalculus Prep · Video 68',
         title: 'Introduction to Series and Summation Notation (College Algebra 68)',
         focusSummary:
           'Reading and expanding sigma notation Σ, index shifts, and connecting finite sums to infinite series.',
@@ -695,7 +695,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
       {
         title: 'Paul’s Online Math Notes — Calculus I: Derivatives',
         provider: "Paul's Online Math Notes",
-        url: 'https://tutorial.math.lamar.edu/Classes/CalcI/DerivIntro.aspx',
+        url: 'https://tutorial.math.lamar.edu/Classes/CalcI/DerivativeIntro.aspx',
         description:
           'Comprehensive rules, chain rule drill sets, implicit differentiation, and logarithmic differentiation notes.',
       },
@@ -827,7 +827,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
         provider: "Paul's Online Math Notes",
         url: 'https://tutorial.math.lamar.edu/Classes/CalcI/IntegralsIntro.aspx',
         description:
-          'Indefinite integrals, FTC Parts I & II, definite u-substitution, and symmetry shortcuts with practice sets.',
+          'Indefinite integrals, FTC Parts I & II, definite u-substitution, and symmetry properties with practice sets.',
       },
       {
         title: 'OpenStax Calculus Volume 1 — Chapter 5: Integration',
@@ -1379,7 +1379,7 @@ export const MODULE_MEDIA_MAP: Record<string, ModuleMediaBundle> = {
       {
         title: 'Paul’s Online Math Notes — Integration & Series Strategy Guides',
         provider: "Paul's Online Math Notes",
-        url: 'https://tutorial.math.lamar.edu/Classes/CalcII/StrategyForSeries.aspx',
+        url: 'https://tutorial.math.lamar.edu/Classes/CalcII/SeriesStrategy.aspx',
         description:
           'Gold-standard university exam flowcharts for mixed integration and series convergence.',
       },

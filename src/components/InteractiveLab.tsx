@@ -126,7 +126,7 @@ function CoordinateGrid({
               y={SVG_H - PAD + 16}
               textAnchor="middle"
               fontSize="11"
-              fill="#64748B"
+              fill="#475569"
               className="font-mono-tabular"
             >
               {x}
@@ -151,7 +151,7 @@ function CoordinateGrid({
               y={py + 4}
               textAnchor="end"
               fontSize="11"
-              fill="#64748B"
+              fill="#475569"
               className="font-mono-tabular"
             >
               {y}
@@ -233,6 +233,9 @@ function LimitLab() {
           aria-label="Epsilon-delta limit graph for f(x) = (x^2 - 4)/(x - 2)"
           data-testid="lab-svg"
         >
+          <desc>
+            Plot of f(x) = (x² − 4)/(x − 2) showing a removable hole at (2, 4), an epsilon tolerance band of ±{epsilon.toFixed(2)} around y = 4, a delta window of ±{delta.toFixed(2)} around x = 2, and test point x = {xVal.toFixed(3)} where f(x) is {Number.isFinite(fx) ? fx.toFixed(3) : 'undefined'}.
+          </desc>
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} />
 
           {/* Epsilon horizontal tolerance band */}
@@ -321,7 +324,7 @@ function LimitLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div>
-          <div className="text-xs font-medium text-[#64748B]">Active Function</div>
+          <div className="text-xs font-medium text-[#475569]">Active Function</div>
           <MathTex tex="f(x) = \frac{x^2 - 4}{x - 2}, \quad \lim_{x \to 2} f(x) = 4" display />
         </div>
 
@@ -368,19 +371,23 @@ function LimitLab() {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">f(x) output</span>
+            <span className="text-[#475569]">f(x) output</span>
             <span className="font-semibold text-[#0F172A]">
               {Number.isFinite(fx) ? fx.toFixed(3) : 'Undefined (0/0 hole)'}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Required δ window</span>
+            <span className="text-[#475569]">Required δ window</span>
             <span className="font-semibold text-[#0F172A]">δ = {delta.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Status</span>
+            <span className="text-[#475569]">Status</span>
             <span
               className={`font-sans font-semibold ${
                 !Number.isFinite(fx)
@@ -481,6 +488,9 @@ function DerivativeLab({ showSecondDerivative }: { showSecondDerivative: boolean
           aria-label="Interactive derivative and curve anatomy graph"
           data-testid="lab-svg"
         >
+          <desc>
+            Graph of the cubic function f(x) = 0.25x³ − 1.5x + 1.5 at base point x₀ = {x0.toFixed(2)} with exact tangent slope f′(x₀) = {metrics.tangentSlope.toFixed(3)}{!showSecondDerivative ? ` and secant slope ${metrics.secantSlope.toFixed(3)} for step h = ${h.toFixed(3)}` : ` and second derivative f″(x₀) = ${fpp(x0).toFixed(2)}`}.
+          </desc>
           <PlotClipDefs id="clip-derivative" />
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} />
 
@@ -569,7 +579,7 @@ function DerivativeLab({ showSecondDerivative }: { showSecondDerivative: boolean
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div>
-          <div className="text-xs font-medium text-[#64748B]">Cubic Model</div>
+          <div className="text-xs font-medium text-[#475569]">Cubic Model</div>
           <MathTex tex="f(x) = \tfrac{1}{4}x^3 - \tfrac{3}{2}x + \tfrac{3}{2}" display />
         </div>
 
@@ -648,9 +658,13 @@ function DerivativeLab({ showSecondDerivative }: { showSecondDerivative: boolean
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Exact tangent f′(x₀)</span>
+            <span className="text-[#475569]">Exact tangent f′(x₀)</span>
             <span className="font-semibold text-[#0F172A]">
               {metrics.tangentSlope.toFixed(3)}
             </span>
@@ -658,13 +672,13 @@ function DerivativeLab({ showSecondDerivative }: { showSecondDerivative: boolean
           {!showSecondDerivative ? (
             <>
               <div className="flex justify-between">
-                <span className="text-[#64748B]">Secant slope (Δy/h)</span>
+                <span className="text-[#475569]">Secant slope (Δy/h)</span>
                 <span className="font-semibold text-[#D97706]">
                   {metrics.secantSlope.toFixed(3)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#64748B]">Approximation error</span>
+                <span className="text-[#475569]">Approximation error</span>
                 <span className="font-semibold text-[#059669]">
                   {metrics.slopeError.toFixed(4)}
                 </span>
@@ -673,11 +687,11 @@ function DerivativeLab({ showSecondDerivative }: { showSecondDerivative: boolean
           ) : (
             <>
               <div className="flex justify-between">
-                <span className="text-[#64748B]">Curvature f″(x₀)</span>
+                <span className="text-[#475569]">Curvature f″(x₀)</span>
                 <span className="font-semibold text-[#0F172A]">{fpp(x0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#64748B]">Concavity</span>
+                <span className="text-[#475569]">Concavity</span>
                 <span className="font-sans font-semibold text-[#1D4ED8]">
                   {Math.abs(fpp(x0)) < 0.08
                     ? 'Inflection point (x = 0)'
@@ -758,6 +772,9 @@ function RiemannLab({ ibpFocus }: { ibpFocus?: boolean }) {
           aria-label="Interactive Riemann sum visualization"
           data-testid="lab-svg"
         >
+          <desc>
+            Area under {preset === 'poly' ? '0.35x² + 0.6' : 'x·e^(-0.45x) + 0.2'} on [0, 3] approximated using {n} {rule} subintervals: Riemann sum is {result.approximation.toFixed(5)} versus exact definite integral {result.exactIntegral.toFixed(5)}.
+          </desc>
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={0.5} yStep={1} />
 
           {/* Riemann Rectangles or Trapezoids */}
@@ -806,7 +823,7 @@ function RiemannLab({ ibpFocus }: { ibpFocus?: boolean }) {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Integrand on [0, 3]</div>
+          <div className="text-xs font-medium text-[#475569]">Integrand on [0, 3]</div>
           <div className="grid grid-cols-2 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             <button
               type="button"
@@ -868,21 +885,25 @@ function RiemannLab({ ibpFocus }: { ibpFocus?: boolean }) {
           />
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Riemann Sum</span>
+            <span className="text-[#475569]">Riemann Sum</span>
             <span className="font-semibold text-[#1D4ED8]">
               {result.approximation.toFixed(5)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Exact Definite Integral</span>
+            <span className="text-[#475569]">Exact Definite Integral</span>
             <span className="font-semibold text-[#0F172A]">
               {result.exactIntegral.toFixed(5)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Absolute Error |Δ|</span>
+            <span className="text-[#475569]">Absolute Error |Δ|</span>
             <span className="font-semibold text-[#059669]">
               {result.error.toFixed(5)}
             </span>
@@ -931,6 +952,9 @@ function VolumeLab() {
           aria-label="Volume of revolution cross-section visualizer"
           data-testid="lab-svg"
         >
+          <desc>
+            Region bounded by y = √x and y = 0.5x on [0, 4] revolved using the {method === 'disk' ? 'washer method around the x-axis' : 'cylindrical shell method around the y-axis'}. At slice x = {sliceX.toFixed(2)}, cross-section area is {crossArea.toFixed(3)} and total volume is {totalVolume.toFixed(3)}.
+          </desc>
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} />
 
           {/* Mirrored reflection below x-axis for washer visual */}
@@ -1005,7 +1029,7 @@ function VolumeLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Slicing Geometry</div>
+          <div className="text-xs font-medium text-[#475569]">Slicing Geometry</div>
           <div className="grid grid-cols-2 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             <button
               type="button"
@@ -1056,21 +1080,25 @@ function VolumeLab() {
           />
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Upper curve √xᵢ</span>
+            <span className="text-[#475569]">Upper curve √xᵢ</span>
             <span className="font-semibold text-[#1D4ED8]">{R.toFixed(3)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Lower curve 0.5xᵢ</span>
+            <span className="text-[#475569]">Lower curve 0.5xᵢ</span>
             <span className="font-semibold text-[#D97706]">{r.toFixed(3)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Slice Area A(xᵢ)</span>
+            <span className="text-[#475569]">Slice Area A(xᵢ)</span>
             <span className="font-semibold text-[#0F172A]">{crossArea.toFixed(3)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Total Volume V</span>
+            <span className="text-[#475569]">Total Volume V</span>
             <span className="font-semibold text-[#059669]">
               {totalVolume.toFixed(3)} ({(totalVolume / Math.PI).toFixed(2)}π)
             </span>
@@ -1145,6 +1173,9 @@ function TrigSubLab() {
           aria-label="Trigonometric substitution reference right triangle"
           data-testid="lab-svg"
         >
+          <desc>
+            Reference right triangle for trigonometric substitution with angle θ = {thetaDeg}° and constant a = {a}: opposite side is {config.opp}, adjacent side is {config.adj}, and hypotenuse is {config.hyp}.
+          </desc>
           {/* Triangle */}
           <polygon
             points={`${x0},${y0} ${x1},${y0} ${x1},${yTop}`}
@@ -1210,7 +1241,7 @@ function TrigSubLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Radical Pattern</div>
+          <div className="text-xs font-medium text-[#475569]">Radical Pattern</div>
           <div className="grid grid-cols-3 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             {(
               [
@@ -1276,17 +1307,21 @@ function TrigSubLab() {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Numeric x(θ)</span>
+            <span className="text-[#475569]">Numeric x(θ)</span>
             <span className="font-semibold text-[#0F172A]">{xVal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">sin θ back-sub</span>
+            <span className="text-[#475569]">sin θ back-sub</span>
             <span className="font-semibold text-[#1D4ED8]">{config.sinVal}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">cos θ back-sub</span>
+            <span className="text-[#475569]">cos θ back-sub</span>
             <span className="font-semibold text-[#059669]">{config.cosVal}</span>
           </div>
         </div>
@@ -1334,6 +1369,9 @@ function ImproperLab() {
           aria-label="Improper p-integral tail area visualizer"
           data-testid="lab-svg"
         >
+          <desc>
+            Graph of 1/x^{p.toFixed(2)} with shaded finite area from 1 to {tBound.toFixed(1)} equal to {res.finiteArea.toFixed(4)}. As t approaches infinity, the improper integral {res.converges && res.infiniteLimit !== null ? `converges to ${res.infiniteLimit.toFixed(4)}` : 'diverges to infinity'}.
+          </desc>
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={2} yStep={0.5} />
 
           <path
@@ -1406,13 +1444,17 @@ function ImproperLab() {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Finite Area [1, t]</span>
+            <span className="text-[#475569]">Finite Area [1, t]</span>
             <span className="font-semibold text-[#0F172A]">{res.finiteArea.toFixed(4)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Infinite Limit (t → ∞)</span>
+            <span className="text-[#475569]">Infinite Limit (t → ∞)</span>
             <span
               className={`font-semibold ${
                 res.converges ? 'text-[#059669]' : 'text-[#DC2626]'
@@ -1490,6 +1532,9 @@ function OdeLab() {
           aria-label="ODE slope field and Euler trajectory simulator"
           data-testid="lab-svg"
         >
+          <desc>
+            Slope field for the {preset} differential equation starting at y(0) = {y0.toFixed(2)}, comparing the exact solution curve against Euler&apos;s method with step size h = {stepH.toFixed(2)} ({res.eulerPoints.length - 1} steps, final error {res.finalError.toFixed(4)} at x = 5).
+          </desc>
           <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} />
 
           {/* Slope field segments */}
@@ -1532,7 +1577,7 @@ function OdeLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Differential Equation</div>
+          <div className="text-xs font-medium text-[#475569]">Differential Equation</div>
           <div className="grid grid-cols-3 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             {(
               [
@@ -1597,13 +1642,17 @@ function OdeLab() {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Euler Steps Taken</span>
+            <span className="text-[#475569]">Euler Steps Taken</span>
             <span className="font-semibold text-[#0F172A]">{res.eulerPoints.length - 1}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Final Error at x = 5</span>
+            <span className="text-[#475569]">Final Error at x = 5</span>
             <span className="font-semibold text-[#059669]">{res.finalError.toFixed(4)}</span>
           </div>
         </div>
@@ -1647,6 +1696,9 @@ function SeriesLab({ defaultPreset }: { defaultPreset: SeriesPresetId }) {
           aria-label="Infinite series terms and partial sums chart"
           data-testid="lab-svg"
         >
+          <desc>
+            Discrete plot of terms a_n and partial sums S_n up to N = {maxN} for the {preset} series with parameter {param.toFixed(2)}. Partial sum S_{maxN} is {last.partialSum.toFixed(4)} and the series {data.converges ? 'converges' : 'diverges'}.
+          </desc>
           <CoordinateGrid
             xMin={xMin}
             xMax={xMax}
@@ -1715,7 +1767,7 @@ function SeriesLab({ defaultPreset }: { defaultPreset: SeriesPresetId }) {
 
         <div className="mt-2 px-2 flex flex-wrap items-center gap-4 text-xs text-[#475569]">
           <span className="font-semibold text-[#1D4ED8]">● Partial Sum Sₙ</span>
-          <span className="font-semibold text-[#64748B]">| Term aₙ</span>
+          <span className="font-semibold text-[#475569]">| Term aₙ</span>
           {data.exactLimit !== null && (
             <span className="font-semibold text-[#059669]">- - Exact Limit L</span>
           )}
@@ -1724,7 +1776,7 @@ function SeriesLab({ defaultPreset }: { defaultPreset: SeriesPresetId }) {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Series Family</div>
+          <div className="text-xs font-medium text-[#475569]">Series Family</div>
           <div className="grid grid-cols-3 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             {(
               [
@@ -1794,15 +1846,19 @@ function SeriesLab({ defaultPreset }: { defaultPreset: SeriesPresetId }) {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">S_{maxN} Partial Sum</span>
+            <span className="text-[#475569]">S_{maxN} Partial Sum</span>
             <span className="font-semibold text-[#1D4ED8]">
               {last.partialSum.toFixed(4)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Verdict</span>
+            <span className="text-[#475569]">Verdict</span>
             <span
               className={`font-sans font-semibold ${
                 data.converges ? 'text-[#059669]' : 'text-[#DC2626]'
@@ -1813,7 +1869,7 @@ function SeriesLab({ defaultPreset }: { defaultPreset: SeriesPresetId }) {
           </div>
           {nextErrorBound !== null && (
             <div className="flex justify-between">
-              <span className="text-[#64748B]">AST Error Bound b_{maxN + 1}</span>
+              <span className="text-[#475569]">AST Error Bound b_{maxN + 1}</span>
               <span className="font-semibold text-[#059669]">
                 ≤ {nextErrorBound.toFixed(4)}
               </span>
@@ -1877,6 +1933,9 @@ function TaylorLab() {
           aria-label="Taylor polynomial approximation studio"
           data-testid="lab-svg"
         >
+          <desc>
+            Comparison of {fnId} and its degree {degree} Maclaurin polynomial T_{degree}(x). At x = {evalX.toFixed(2)}, exact value is {Number.isFinite(evalMetrics.exact) ? evalMetrics.exact.toFixed(5) : 'undefined'} and polynomial approximation is {evalMetrics.approx.toFixed(5)}.
+          </desc>
           <PlotClipDefs id="clip-taylor" />
           <CoordinateGrid
             xMin={xMin}
@@ -1934,7 +1993,7 @@ function TaylorLab() {
         </svg>
 
         <div className="mt-2 px-2 flex flex-wrap items-center gap-4 text-xs text-[#475569]">
-          <span className="font-semibold text-[#64748B]">— Exact f(x)</span>
+          <span className="font-semibold text-[#475569]">— Exact f(x)</span>
           <span className="font-semibold text-[#1D4ED8]">
             — Taylor Polynomial T<sub>{degree}</sub>(x)
           </span>
@@ -1946,7 +2005,7 @@ function TaylorLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Target Function</div>
+          <div className="text-xs font-medium text-[#475569]">Target Function</div>
           <div className="grid grid-cols-3 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             {(
               [
@@ -2022,15 +2081,19 @@ function TaylorLab() {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Exact f({evalX.toFixed(2)})</span>
+            <span className="text-[#475569]">Exact f({evalX.toFixed(2)})</span>
             <span className="font-semibold text-[#0F172A]">
               {Number.isFinite(evalMetrics.exact) ? evalMetrics.exact.toFixed(5) : 'Undefined'}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">
+            <span className="text-[#475569]">
               T<sub>{degree}</sub>({evalX.toFixed(2)})
             </span>
             <span className="font-semibold text-[#1D4ED8]">
@@ -2038,7 +2101,7 @@ function TaylorLab() {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">
+            <span className="text-[#475569]">
               Remainder |R<sub>{degree}</sub>|
             </span>
             <span className="font-semibold text-[#059669]">
@@ -2046,7 +2109,7 @@ function TaylorLab() {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Radius of Convergence</span>
+            <span className="text-[#475569]">Radius of Convergence</span>
             <span className="font-semibold text-[#0F172A]">
               R = {evalMetrics.radiusOfConvergence}
             </span>
@@ -2098,6 +2161,9 @@ function PolarLab() {
           aria-label="Polar coordinate curve and swept sector area visualizer"
           data-testid="lab-svg"
         >
+          <desc>
+            Polar plot of the {preset} curve swept from 0° to {thetaDeg}°, showing radius r = {sampled.currentR.toFixed(3)} and swept sector area {sampled.sectorArea.toFixed(4)}.
+          </desc>
           {/* Polar concentric rings */}
           {[1, 2, 3].map((r) => (
             <circle
@@ -2139,7 +2205,7 @@ function PolarLab() {
 
       <div className="lg:col-span-4 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 space-y-5">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-[#64748B]">Polar Curve</div>
+          <div className="text-xs font-medium text-[#475569]">Polar Curve</div>
           <div className="grid grid-cols-2 gap-1 p-1 bg-[#F1F5F9] rounded-lg">
             {(
               [
@@ -2189,13 +2255,17 @@ function PolarLab() {
           />
         </div>
 
-        <div className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="pt-3 border-t border-[#E2E8F0] space-y-2 text-xs font-mono-tabular"
+        >
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Radius r(θ)</span>
+            <span className="text-[#475569]">Radius r(θ)</span>
             <span className="font-semibold text-[#0F172A]">{sampled.currentR.toFixed(3)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#64748B]">Swept Area ½∫r² dθ</span>
+            <span className="text-[#475569]">Swept Area ½∫r² dθ</span>
             <span className="font-semibold text-[#059669]">
               {sampled.sectorArea.toFixed(4)}
             </span>
@@ -2270,7 +2340,7 @@ function TriageLab() {
 
   return (
     <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748B]">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#475569]">
         <span>
           Rapid Recognition Card {cardIdx + 1} of {TRIAGE_CARDS.length} · {card.kind}
         </span>
@@ -2411,7 +2481,16 @@ function PreAlgFunctionsLab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
         <div className="lg:col-span-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-2">
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto block">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full h-auto block"
+            role="img"
+            aria-label="Interactive function transformation graph comparing parent and shifted curve"
+            data-testid="lab-svg"
+          >
+            <desc>
+              Graph of transformed {family === 'sqrt' ? 'square root' : 'absolute value'} function with stretch a = {a.toFixed(1)}, horizontal shift h = {h.toFixed(1)}, and vertical shift k = {k.toFixed(1)}. Domain is {domainLabel} and range is {rangeLabel}.
+            </desc>
             <PlotClipDefs id="clip-pa-fn" />
             <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={2} yStep={2} />
             <g clipPath="url(#clip-pa-fn)">
@@ -2458,13 +2537,17 @@ function PreAlgFunctionsLab() {
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono-tabular">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="grid grid-cols-2 gap-2 text-xs font-mono-tabular"
+          >
             <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg">
-              <div className="text-[#64748B] font-sans">Domain</div>
+              <div className="text-[#475569] font-sans">Domain</div>
               <div className="font-semibold text-[#0F172A] mt-0.5">{domainLabel}</div>
             </div>
             <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg">
-              <div className="text-[#64748B] font-sans">Range</div>
+              <div className="text-[#475569] font-sans">Range</div>
               <div className="font-semibold text-[#0F172A] mt-0.5">{rangeLabel}</div>
             </div>
           </div>
@@ -2507,7 +2590,16 @@ function PreAlgQuadraticsLab() {
     <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 sm:p-6 space-y-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
         <div className="lg:col-span-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-2">
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto block">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full h-auto block"
+            role="img"
+            aria-label="Interactive quadratic parabola vertex and real roots graph"
+            data-testid="lab-svg"
+          >
+            <desc>
+              Parabola f(x) = {safeA.toFixed(1)}x² + {b.toFixed(1)}x + {c.toFixed(1)} with vertex at ({h.toFixed(2)}, {k.toFixed(2)}), discriminant {disc.toFixed(1)}, and {roots.length} real {roots.length === 1 ? 'zero' : 'zeros'}.
+            </desc>
             <PlotClipDefs id="clip-pa-quad" />
             <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={2} yStep={2} />
             <g clipPath="url(#clip-pa-quad)">
@@ -2561,19 +2653,23 @@ function PreAlgQuadraticsLab() {
             </label>
           </div>
 
-          <div className="space-y-2 text-xs font-mono-tabular">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="space-y-2 text-xs font-mono-tabular"
+          >
             <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg flex justify-between">
-              <span className="font-sans text-[#64748B]">Vertex (amber)</span>
+              <span className="font-sans text-[#475569]">Vertex (amber)</span>
               <span className="font-semibold text-[#0F172A]">({h.toFixed(2)}, {k.toFixed(2)})</span>
             </div>
             <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg flex justify-between">
-              <span className="font-sans text-[#64748B]">Discriminant Δ = b²−4ac</span>
+              <span className="font-sans text-[#475569]">Discriminant Δ = b²−4ac</span>
               <span className={`font-semibold ${disc > 0 ? 'text-[#059669]' : disc < 0 ? 'text-[#DC2626]' : 'text-[#D97706]'}`}>
                 {disc.toFixed(1)}
               </span>
             </div>
             <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg">
-              <div className="font-sans text-[#64748B]">Real Zeros (green)</div>
+              <div className="font-sans text-[#475569]">Real Zeros (green)</div>
               <div className="font-semibold text-[#0F172A] mt-0.5">
                 {roots.length === 2
                   ? `x = ${roots[0].toFixed(2)},  x = ${roots[1].toFixed(2)}`
@@ -2638,7 +2734,16 @@ function PreAlgRationalsLab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
         <div className="lg:col-span-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-2">
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto block">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full h-auto block"
+            role="img"
+            aria-label="Rational function asymptotes and removable hole graph"
+            data-testid="lab-svg"
+          >
+            <desc>
+              Rational function graph in {mode === 'asymptote' ? `asymptote mode with vertical asymptote at x = ${pole} and horizontal asymptote at y = ${ha}` : `removable hole mode with an open hole at (${pole}, ${holeY})`}.
+            </desc>
             <PlotClipDefs id="clip-pa-rat" />
             <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={2} yStep={2} />
             <g clipPath="url(#clip-pa-rat)">
@@ -2686,7 +2791,11 @@ function PreAlgRationalsLab() {
             </label>
           </div>
 
-          <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-xs text-[#334155] leading-relaxed">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-xs text-[#334155] leading-relaxed"
+          >
             {mode === 'asymptote' ? (
               <>
                 <strong className="text-[#DC2626]">Vertical Asymptote:</strong> x = {pole} does not cancel, so y blows up to ±∞.{' '}
@@ -2724,7 +2833,16 @@ function PreAlgExpLogLab() {
     <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5 sm:p-6 space-y-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
         <div className="lg:col-span-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-2">
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto block">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full h-auto block"
+            role="img"
+            aria-label="Exponential and logarithmic inverse reflection graph"
+            data-testid="lab-svg"
+          >
+            <desc>
+              Graph of y = {base.toFixed(1)}^x and its inverse y = log base {base.toFixed(1)} of x reflected across y = x, highlighting point ({t.toFixed(2)}, {expVal.toFixed(2)}) and its mirror ({expVal.toFixed(2)}, {t.toFixed(2)}).
+            </desc>
             <PlotClipDefs id="clip-pa-exp" />
             <CoordinateGrid xMin={xMin} xMax={xMax} yMin={yMin} yMax={yMax} xStep={1} yStep={1} />
             <g clipPath="url(#clip-pa-exp)">
@@ -2762,7 +2880,11 @@ function PreAlgExpLogLab() {
             </label>
           </div>
 
-          <div className="space-y-2 text-xs font-mono-tabular">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="space-y-2 text-xs font-mono-tabular"
+          >
             <div className="p-2.5 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg flex justify-between text-[#1E3A8A]">
               <span className="font-sans">Exponential point</span>
               <span className="font-semibold">({t.toFixed(2)}, {expVal.toFixed(2)})</span>
@@ -2837,7 +2959,16 @@ function PreAlgUnitCircleLab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
         <div className="lg:col-span-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-2">
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto block">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full h-auto block"
+            role="img"
+            aria-label="Unit circle and sine wave projection diagram"
+            data-testid="lab-svg"
+          >
+            <desc>
+              Unit circle paired with y = sin(θ) over [0, 2π]. At angle θ = {deg}° ({rad.toFixed(2)} radians), cos(θ) = {cosV.toFixed(3)} and sin(θ) = {sinV.toFixed(3)}.
+            </desc>
             {/* Unit Circle axes */}
             <line x1={cx - r - 20} y1={cy} x2={cx + r + 20} y2={cy} stroke="#CBD5E1" strokeWidth={1.5} />
             <line x1={cx} y1={cy - r - 20} x2={cx} y2={cy + r + 20} stroke="#CBD5E1" strokeWidth={1.5} />
@@ -2876,7 +3007,11 @@ function PreAlgUnitCircleLab() {
             <input type="range" min={0} max={360} step={5} value={deg} onChange={(e) => setDeg(Number(e.target.value))} className="w-full accent-[#1D4ED8]" />
           </label>
 
-          <div className="space-y-2 text-xs font-mono-tabular">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="space-y-2 text-xs font-mono-tabular"
+          >
             <div className="p-2.5 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg flex justify-between text-[#1E3A8A]">
               <span className="font-sans">cos(θ) (horizontal)</span>
               <span className="font-semibold">{cosV.toFixed(3)}</span>
@@ -2910,11 +3045,11 @@ export function InteractiveLab({ labType, title, objective }: InteractiveLabProp
         <p className="text-sm text-[#475569] max-w-3xl">{objective}</p>
       </div>
 
-      {labType === 'prealg-functions' && <PreAlgFunctionsLab />}
-      {labType === 'prealg-quadratics' && <PreAlgQuadraticsLab />}
-      {labType === 'prealg-rationals' && <PreAlgRationalsLab />}
-      {labType === 'prealg-exp-log' && <PreAlgExpLogLab />}
-      {labType === 'prealg-unit-circle' && <PreAlgUnitCircleLab />}
+      {labType === 'precalc-functions' && <PreAlgFunctionsLab />}
+      {labType === 'precalc-quadratics' && <PreAlgQuadraticsLab />}
+      {labType === 'precalc-rationals' && <PreAlgRationalsLab />}
+      {labType === 'precalc-exp-log' && <PreAlgExpLogLab />}
+      {labType === 'precalc-unit-circle' && <PreAlgUnitCircleLab />}
       {labType === 'limit' && <LimitLab />}
       {labType === 'derivative' && <DerivativeLab showSecondDerivative={false} />}
       {labType === 'extrema' && <DerivativeLab showSecondDerivative={true} />}

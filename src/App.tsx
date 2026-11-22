@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AboutCreditsView } from './components/AboutCreditsView';
 import { CoursePlanView } from './components/CoursePlanView';
 import { DrillExamView } from './components/DrillExamView';
 import { FormulaVaultView } from './components/FormulaVaultView';
@@ -229,6 +230,10 @@ export default function App() {
     setProgress(createInitialProgress(firstModuleId));
   }, [firstModuleId]);
 
+  const handleImportProgress = useCallback((imported: UserProgressState) => {
+    setProgress(imported);
+  }, []);
+
   const nextModForCta =
     ALL_MODULES.find((m) => m.id === summary.nextRecommendedModuleId) ?? ALL_MODULES[0];
   const primaryCtaLabel =
@@ -291,6 +296,8 @@ export default function App() {
           onChangeStartDate={handleChangeStartDate}
           onOpenExams={() => handleNavigate('exam')}
           onOpenFormulas={() => handleNavigate('formulas')}
+          onOpenAbout={() => handleNavigate('about')}
+          onImportProgress={handleImportProgress}
           onResetProgress={handleResetProgress}
         />
       )}
@@ -322,6 +329,10 @@ export default function App() {
       )}
 
       {activeView === 'formulas' && <FormulaVaultView />}
+
+      {activeView === 'about' && (
+        <AboutCreditsView onBackToPlan={() => handleNavigate('plan')} />
+      )}
     </div>
   );
 }

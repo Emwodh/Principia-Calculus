@@ -1,11 +1,11 @@
 import type { FormulaEntry } from '../types/course';
 
 export const FORMULA_VAULT: FormulaEntry[] = [
-  // Pre-Algebra & Trig Foundations
+  // Precalculus Prep & Trig Foundations
   {
     id: 'f-pa-diff-quot',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Difference Quotient (Average Rate of Change)',
     lhsTex: '\\text{AROC}_{[x, x+h]}',
     rhsTex: '\\frac{f(x + h) - f(x)}{h}',
@@ -14,28 +14,28 @@ export const FORMULA_VAULT: FormulaEntry[] = [
   },
   {
     id: 'f-pa-quadratic',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Quadratic Formula & Vertex Form',
-    lhsTex: 'ax^2 + bx + c = 0 \\implies x',
+    lhsTex: 'x',
     rhsTex: '\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}',
-    condition: 'Vertex at h = -b / (2a)',
+    condition: 'ax² + bx + c = 0, a ≠ 0; vertex h = −b/(2a)',
     recallCue: 'Complete the square using (b/2a)²; discriminant Δ = b² − 4ac classifies real vs. complex roots.',
   },
   {
     id: 'f-pa-asymptotes',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Horizontal Asymptote Degree Rules',
     lhsTex: '\\lim_{x\\to\\pm\\infty} \\frac{a_n x^n + \\cdots}{b_m x^m + \\cdots}',
     rhsTex: '\\begin{cases} 0 & n < m \\\\ a_n/b_m & n = m \\\\ \\pm\\infty & n > m \\end{cases}',
-    condition: 'Factor first to separate holes from VAs',
-    recallCue: 'Bottom-heavy → y = 0; tied degrees → leading ratio; top-heavy by 1 → slant asymptote.',
+    condition: 'aₙ ≠ 0, bₘ ≠ 0; factor first for holes',
+    recallCue: 'Bottom-heavy → y = 0; tied degrees → leading ratio; top-heavy by 1 (n = m + 1) → slant asymptote.',
   },
   {
     id: 'f-pa-log-laws',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Laws of Logarithms',
     lhsTex: '\\ln\\!\\left(\\frac{M^r}{N}\\right)',
     rhsTex: 'r\\ln(M) - \\ln(N)',
@@ -44,8 +44,8 @@ export const FORMULA_VAULT: FormulaEntry[] = [
   },
   {
     id: 'f-pa-change-base',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Logarithm Change of Base',
     lhsTex: '\\log_b(x)',
     rhsTex: '\\frac{\\ln(x)}{\\ln(b)}',
@@ -54,17 +54,19 @@ export const FORMULA_VAULT: FormulaEntry[] = [
   },
   {
     id: 'f-pa-pythag',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Pythagorean Trigonometric Identities',
     lhsTex: '\\sin^2\\theta + \\cos^2\\theta = 1',
+    relationTex: '\\implies',
     rhsTex: '\\tan^2\\theta + 1 = \\sec^2\\theta,\\quad 1 + \\cot^2\\theta = \\csc^2\\theta',
+    condition: 'Where cos θ ≠ 0 or sin θ ≠ 0',
     recallCue: 'Divide sin² + cos² = 1 by cos² to get tan² + 1 = sec²; divide by sin² to get 1 + cot² = csc².',
   },
   {
     id: 'f-pa-double-angle',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Double-Angle Identities',
     lhsTex: '\\sin(2\\theta),\\; \\cos(2\\theta)',
     rhsTex: '2\\sin\\theta\\cos\\theta,\\quad \\cos^2\\theta - \\sin^2\\theta',
@@ -73,8 +75,8 @@ export const FORMULA_VAULT: FormulaEntry[] = [
   },
   {
     id: 'f-pa-power-red',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Power-Reducing (Half-Angle) Identities',
     lhsTex: '\\sin^2\\theta,\\; \\cos^2\\theta',
     rhsTex: '\\frac{1 - \\cos(2\\theta)}{2},\\quad \\frac{1 + \\cos(2\\theta)}{2}',
@@ -82,17 +84,18 @@ export const FORMULA_VAULT: FormulaEntry[] = [
   },
   {
     id: 'f-pa-inv-trig-range',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Inverse Trig Principal Ranges',
-    lhsTex: '\\arcsin(x),\\; \\arccos(x),\\; \\arctan(x)',
+    lhsTex: '\\text{Range}(\\arcsin,\\; \\arccos,\\; \\arctan)',
     rhsTex: '\\left[-\\frac{\\pi}{2},\\frac{\\pi}{2}\\right],\\; [0,\\pi],\\; \\left(-\\frac{\\pi}{2},\\frac{\\pi}{2}\\right)',
+    condition: 'Domains: [-1, 1], [-1, 1], (-∞, ∞)',
     recallCue: 'arcsin & arctan live in QI/QIV; arccos lives in QI/QII.',
   },
   {
     id: 'f-pa-geo-finite',
-    category: 'Pre-Algebra & Trig',
-    course: 'prealg',
+    category: 'Precalculus Prep & Trig',
+    course: 'precalc',
     name: 'Finite Geometric Sum Formula',
     lhsTex: '\\sum_{k=0}^{n-1} a r^k',
     rhsTex: 'a\\,\\frac{1 - r^n}{1 - r}',
@@ -137,7 +140,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'L’Hôpital’s Rule',
     lhsTex: '\\lim_{x \\to a} \\frac{f(x)}{g(x)}',
     rhsTex: '\\lim_{x \\to a} \\frac{f\'(x)}{g\'(x)}',
-    condition: 'Only for 0/0 or ±∞/±∞',
+    condition: '0/0 or ±∞/±∞; f,g diff. near a, g′≠0, RHS limit exists',
     recallCue: 'Differentiate numerator and denominator separately.',
   },
 
@@ -149,6 +152,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Derivative Definition',
     lhsTex: "f'(x)",
     rhsTex: '\\lim_{h \\to 0} \\frac{f(x + h) - f(x)}{h}',
+    condition: 'Provided the limit exists',
     recallCue: 'Slope of secant line as width h collapses to 0.',
   },
   {
@@ -158,6 +162,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Chain Rule',
     lhsTex: '\\frac{d}{dx}\\big[f(g(x))\\big]',
     rhsTex: "f'(g(x))\\cdot g'(x)",
+    condition: 'g diff. at x, f diff. at g(x)',
     recallCue: 'Outer derivative evaluated at inner, times inner derivative.',
   },
   {
@@ -217,6 +222,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'FTC Part I (with Chain Rule)',
     lhsTex: '\\frac{d}{dx}\\int_{a}^{g(x)} f(t)\\,dt',
     rhsTex: "f(g(x))\\cdot g'(x)",
+    condition: 'f continuous, g differentiable',
     recallCue: 'Plug upper limit in, multiply by its derivative.',
   },
   {
@@ -226,6 +232,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Integral of Secant',
     lhsTex: '\\int \\sec(x)\\,dx',
     rhsTex: '\\ln|\\sec x + \\tan x| + C',
+    condition: 'cos x ≠ 0',
     recallCue: 'Multiply top and bottom by (sec x + tan x).',
   },
   {
@@ -245,7 +252,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Scaled Arcsine Integral',
     lhsTex: '\\int \\frac{1}{\\sqrt{a^2 - x^2}}\\,dx',
     rhsTex: '\\arcsin\\left(\\frac{x}{a}\\right) + C',
-    condition: 'a > 0',
+    condition: 'a > 0, |x| < a',
     recallCue: 'No leading 1/a factor here (unlike arctan).',
   },
   {
@@ -255,6 +262,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Washer Volume Method',
     lhsTex: 'V_{\\text{washer}}',
     rhsTex: '\\pi \\int_{a}^{b} \\Big([R(x)]^2 - [r(x)]^2\\Big)\\,dx',
+    condition: 'R(x) ≥ r(x) ≥ 0 continuous on [a, b]',
     recallCue: 'Slices perpendicular to axis of rotation.',
   },
   {
@@ -264,6 +272,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Cylindrical Shell Volume',
     lhsTex: 'V_{\\text{shell}}',
     rhsTex: '2\\pi \\int_{a}^{b} x\\,f(x)\\,dx',
+    condition: '0 ≤ a < b, f(x) ≥ 0 continuous on [a, b]',
     recallCue: 'Slices parallel to axis: 2π(radius)(height) dx.',
   },
 
@@ -285,6 +294,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Integral of Natural Log',
     lhsTex: '\\int \\ln(x)\\,dx',
     rhsTex: 'x\\ln(x) - x + C',
+    condition: 'x > 0',
     recallCue: 'Derived via IBP with u = ln x, dv = 1 dx.',
   },
   {
@@ -302,7 +312,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Trig Substitution Map',
     lhsTex: '\\sqrt{a^2-x^2},\\; \\sqrt{a^2+x^2},\\; \\sqrt{x^2-a^2}',
+    relationTex: '\\implies x =',
     rhsTex: 'a\\sin\\theta,\\quad a\\tan\\theta,\\quad a\\sec\\theta',
+    condition: 'a > 0 (principal θ interval)',
     recallCue: 'Always draw the reference right triangle to return to x.',
   },
   {
@@ -321,6 +333,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Cartesian Arc Length',
     lhsTex: 'L',
     rhsTex: '\\int_{a}^{b} \\sqrt{1 + [f\'(x)]^2}\\,dx',
+    condition: 'f′ continuous on [a, b]',
     recallCue: 'Look for a perfect square inside 1 + (f′)².',
   },
   {
@@ -329,7 +342,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Logistic ODE Solution',
     lhsTex: '\\frac{dP}{dt} = kP\\left(1 - \\frac{P}{K}\\right)',
+    relationTex: '\\implies',
     rhsTex: 'P(t) = \\frac{K}{1 + A e^{-kt}},\\; A = \\frac{K - P_0}{P_0}',
+    condition: 'P₀ ≠ 0, K > 0 (P ≡ 0 is equilibrium)',
     recallCue: 'Fastest growth occurs at P = K/2.',
   },
 
@@ -340,7 +355,8 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Geometric Series Sum',
     lhsTex: '\\sum_{n=0}^{\\infty} a r^n',
-    rhsTex: '\\frac{a}{1 - r} \\iff |r| < 1',
+    rhsTex: '\\frac{a}{1 - r} \\quad (|r| < 1)',
+    condition: 'For a ≠ 0, converges iff |r| < 1',
     recallCue: 'First term divided by (1 − common ratio).',
   },
   {
@@ -349,8 +365,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'nth-Term Divergence Test',
     lhsTex: '\\lim_{n \\to \\infty} a_n \\neq 0',
+    relationTex: '\\implies',
     rhsTex: '\\sum a_n \\text{ diverges}',
-    condition: 'One-way test only!',
+    condition: 'One-way test only (also diverges if limit DNE)',
     recallCue: 'lim aₙ = 0 NEVER proves convergence.',
   },
   {
@@ -359,6 +376,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'p-Series Test',
     lhsTex: '\\sum_{n=1}^{\\infty} \\frac{1}{n^p}',
+    relationTex: ':',
     rhsTex: '\\text{Converges} \\iff p > 1',
     recallCue: 'Harmonic series (p = 1) is the divergence boundary.',
   },
@@ -368,8 +386,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Alternating Series Error Bound',
     lhsTex: '|S - S_N|',
-    rhsTex: '\\le b_{N+1}',
-    condition: 'bₙ > 0 decreasing to 0',
+    relationTex: '\\le',
+    rhsTex: 'b_{N+1}',
+    condition: 'bₙ > 0 decreasing to 0 (for n ≥ N)',
     recallCue: 'Error is never larger than the first omitted term.',
   },
   {
@@ -378,7 +397,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Ratio Test',
     lhsTex: 'L = \\lim_{n \\to \\infty} \\left|\\frac{a_{n+1}}{a_n}\\right|',
+    relationTex: '\\implies',
     rhsTex: 'L < 1 \\text{ conv. abs.},\\; L > 1 \\text{ div.},\\; L = 1 \\text{ inconcl.}',
+    condition: 'aₙ ≠ 0 for large n; limit L exists (or ∞)',
     recallCue: 'First choice for factorials (n!) and exponentials (a^n).',
   },
 
@@ -390,6 +411,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'General Taylor Series',
     lhsTex: 'f(x)',
     rhsTex: '\\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x - a)^n',
+    condition: 'Valid where remainder Rₙ(x) → 0',
     recallCue: 'Maclaurin is the special case centered at a = 0.',
   },
   {
@@ -448,8 +470,9 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     course: 'calc2',
     name: 'Lagrange Remainder Bound',
     lhsTex: '|R_n(x)|',
-    rhsTex: '\\le \\frac{M}{(n + 1)!}|x - a|^{n+1}',
-    condition: 'M ≥ max |f^{(n+1)}(z)|',
+    relationTex: '\\le',
+    rhsTex: '\\frac{M}{(n + 1)!}|x - a|^{n+1}',
+    condition: 'f^{(n+1)} continuous; M ≥ max |f^{(n+1)}(z)| between a and x',
     recallCue: 'Looks like the (n+1)-th Taylor term using max derivative M.',
   },
 
@@ -461,6 +484,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Parametric First & Second Derivatives',
     lhsTex: '\\frac{dy}{dx}, \\quad \\frac{d^2y}{dx^2}',
     rhsTex: '\\frac{y\'(t)}{x\'(t)}, \\quad \\frac{\\frac{d}{dt}(dy/dx)}{x\'(t)}',
+    condition: 'x, y diff. (twice for d²y/dx²), x′(t) ≠ 0',
     recallCue: 'Divide by x′(t) a second time for concavity.',
   },
   {
@@ -470,6 +494,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Polar Enclosed Area',
     lhsTex: 'A_{\\text{polar}}',
     rhsTex: '\\frac{1}{2}\\int_{\\alpha}^{\\beta} [r(\\theta)]^2\\,d\\theta',
+    condition: 'r continuous, 0 ≤ β − α ≤ 2π, traced once',
     recallCue: 'Circular sector slices ½r² dθ.',
   },
   {
@@ -479,6 +504,7 @@ export const FORMULA_VAULT: FormulaEntry[] = [
     name: 'Polar Arc Length',
     lhsTex: 'L_{\\text{polar}}',
     rhsTex: '\\int_{\\alpha}^{\\beta} \\sqrt{r^2 + \\left(\\frac{dr}{d\\theta}\\right)^2}\\,d\\theta',
+    condition: 'r′ continuous on [α, β], traced once',
     recallCue: 'Don’t forget to square BOTH r and dr/dθ.',
   },
 ];

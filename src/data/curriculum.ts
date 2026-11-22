@@ -16,11 +16,11 @@ export const ALL_PROBLEMS: PracticeProblem[] = ALL_MODULES.flatMap(
 export const EXAM_TEMPLATES: ExamTemplate[] = [
   {
     id: 'exam-prealg-readiness',
-    title: 'Pre-Algebra & Precalculus Readiness Check',
+    title: 'Precalculus Prep Readiness Check',
     subtitle: 'Domains, difference quotients, completing the square, asymptotes, logarithms, unit circle, and trig equations.',
     durationMinutes: 25,
     questionCount: 15,
-    filterCourse: 'prealg',
+    filterCourse: 'precalc',
   },
   {
     id: 'exam-calc1-midterm',
@@ -32,8 +32,8 @@ export const EXAM_TEMPLATES: ExamTemplate[] = [
   },
   {
     id: 'exam-integration-blitz',
-    title: 'Integration Techniques Speed Blitz',
-    subtitle: 'High-intensity drill across u-sub, IBP, trig integrals, trig sub, partial fractions, and improper integrals.',
+    title: 'Integration Techniques Practice Drill',
+    subtitle: 'Focused practice across u-sub, IBP, trig integrals, trig sub, partial fractions, and improper integrals.',
     durationMinutes: 20,
     questionCount: 12,
     filterCourse: 'both',

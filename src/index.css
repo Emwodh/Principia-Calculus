@@ -29,8 +29,9 @@
   button:focus-visible,
   a:focus-visible,
   input:focus-visible,
-  select:focus-visible {
-    outline: 2px solid #2563eb;
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #1d4ed8;
     outline-offset: 2px;
   }
 }
@@ -46,9 +47,16 @@ input[type="range"].calc-slider {
   width: 100%;
   height: 6px;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: #cbd5e1;
   outline: none;
   cursor: pointer;
+}
+
+input[type="range"].calc-slider:focus-visible,
+input[type="range"]:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 4px;
+  border-radius: 999px;
 }
 
 input[type="range"].calc-slider::-webkit-slider-thumb {

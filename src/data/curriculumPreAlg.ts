@@ -4,13 +4,13 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-functions',
     dayNumber: 1,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 1',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 1',
     title: 'Functions, Domains, Graphs & Transformations',
     subtitle:
       'Build rock-solid mastery of function notation, domain restrictions, even/odd symmetry, transformations, and average rate of change.',
     estimatedMinutes: 110,
-    labType: 'prealg-functions',
+    labType: 'precalc-functions',
     labTitle: 'Function Behavior, Domains & Discontinuities Lab',
     labObjective:
       'Inspect how algebraic expressions behave near domain exclusions and how transformations shift a parent curve.',
@@ -115,7 +115,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa1-1',
         moduleId: 'prealg-functions',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Domain Restrictions',
         difficulty: 'Core',
         prompt: 'What is the domain of the real-valued function below?',
@@ -135,7 +135,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa1-2',
         moduleId: 'prealg-functions',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Even & Odd Symmetry',
         difficulty: 'Core',
         prompt: 'Classify the symmetry of the function:',
@@ -155,7 +155,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa1-3',
         moduleId: 'prealg-functions',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Difference Quotient',
         difficulty: 'Exam Standard',
         prompt: 'Evaluate and simplify the difference quotient for f(x) = x² + 5x:',
@@ -177,13 +177,13 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-quadratics-polys',
     dayNumber: 2,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 2',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 2',
     title: 'Quadratics, Polynomials, Division & Zeros',
     subtitle:
       'Master completing the square, the quadratic formula, polynomial end behavior, multiplicity, synthetic division, and the Rational Zeros Theorem.',
     estimatedMinutes: 115,
-    labType: 'prealg-quadratics',
+    labType: 'precalc-quadratics',
     labTitle: 'Polynomial Roots, Turning Points & End Behavior Lab',
     labObjective:
       'Explore how leading degree, roots, and turning points govern polynomial shapes and sign changes.',
@@ -215,7 +215,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         title: 'Factor Theorem, Multiplicity & Rational Zeros',
         statement:
-          'c is a zero of polynomial P(x) iff (x − c) is a factor. At a zero of odd multiplicity the graph crosses the x-axis; at even multiplicity it bounces tangent to the x-axis.',
+          'c is a zero of polynomial P(x) iff (x − c) is a factor. At a real zero of odd multiplicity the graph crosses the x-axis; at even multiplicity it bounces tangent to the x-axis. When P has integer coefficients with aₙ ≠ 0 and a₀ ≠ 0, every rational zero p/q in lowest terms has p | a₀ and q | aₙ.',
         formulaTex:
           'P(x) = a_n x^n + \\cdots + a_0 \\implies \\text{possible rational zeros} = \\pm \\frac{\\text{factors of } a_0}{\\text{factors of } a_n}',
         intuition:
@@ -288,7 +288,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa2-1',
         moduleId: 'prealg-quadratics-polys',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Completing the Square',
         difficulty: 'Core',
         prompt: 'Which expression equals x² + 8x + 21 in completed-square form?',
@@ -308,7 +308,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa2-2',
         moduleId: 'prealg-quadratics-polys',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Multiplicity',
         difficulty: 'Core',
         prompt: 'How does the graph of P(x) = −2(x + 1)²(x − 4)³ behave at x = −1 and x = 4?',
@@ -328,7 +328,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa2-3',
         moduleId: 'prealg-quadratics-polys',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Remainder Theorem',
         difficulty: 'Exam Standard',
         prompt: 'Find the remainder when P(x) = 2x³ − 5x + 7 is divided by (x − 2):',
@@ -350,13 +350,13 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-rationals-inequalities',
     dayNumber: 3,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 3',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 3',
     title: 'Rational Functions, Asymptotes, Holes & Inequalities',
     subtitle:
       'Analyze vertical, horizontal, and oblique asymptotes, removable holes, and sign charts for polynomial and rational inequalities.',
     estimatedMinutes: 110,
-    labType: 'prealg-rationals',
+    labType: 'precalc-rationals',
     labTitle: 'Holes vs. Vertical Asymptotes Explorer',
     labObjective:
       'Distinguish canceled common factors (removable holes) from uncanceled denominator zeros (vertical asymptotes).',
@@ -377,7 +377,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         title: 'Asymptotes & Holes of R(x) = P(x) / Q(x)',
         statement:
-          'Factor P(x) and Q(x) completely first. A factor (x − c) that cancels produces a hole at x = c; a denominator factor remaining after cancellation produces a vertical asymptote.',
+          'Factor P(x) and Q(x) completely first. If (x − c) cancels completely from Q(x) (leaving Q₁(c) ≠ 0), x = c is a removable hole; if any factor of (x − c) remains in the reduced denominator, x = c is a vertical asymptote.',
         formulaTex:
           '\\deg P < \\deg Q \\Rightarrow y = 0 \\quad|\\quad \\deg P = \\deg Q \\Rightarrow y = \\frac{a_n}{b_m} \\quad|\\quad \\deg P = \\deg Q + 1 \\Rightarrow \\text{slant}',
         intuition:
@@ -461,7 +461,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa3-1',
         moduleId: 'prealg-rationals-inequalities',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Horizontal Asymptotes',
         difficulty: 'Core',
         prompt: 'Find the horizontal asymptote of:',
@@ -481,7 +481,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa3-2',
         moduleId: 'prealg-rationals-inequalities',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Oblique Asymptote',
         difficulty: 'Exam Standard',
         prompt: 'Find the oblique (slant) asymptote of:',
@@ -501,7 +501,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa3-3',
         moduleId: 'prealg-rationals-inequalities',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Rational Inequalities',
         difficulty: 'Exam Standard',
         prompt: 'Solve the inequality:',
@@ -523,13 +523,13 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-exp-log',
     dayNumber: 4,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 4',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 4',
     title: 'Composite, Inverse, Exponential & Logarithmic Functions',
     subtitle:
       'Master function composition, one-to-one inverses, logarithm expansion/condensing laws, change of base, and exponential/log equations.',
     estimatedMinutes: 120,
-    labType: 'prealg-exp-log',
+    labType: 'precalc-exp-log',
     labTitle: 'Exponential Growth & Logarithmic Inverse Curves',
     labObjective:
       'Observe how exponential growth scales proportionally to its current value and why logarithms invert exponentials.',
@@ -634,11 +634,11 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa4-1',
         moduleId: 'prealg-exp-log',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Logarithm Properties',
         difficulty: 'Core',
-        prompt: 'Which expression is the complete expansion of:',
-        promptTex: '\\ln\\!\\left(\\frac{x^3 \\sqrt{y}}{e^2}\\right)',
+        prompt: 'Which expression is the complete expansion of (for x > 0, y > 0):',
+        promptTex: '\\ln\\!\\left(\\frac{x^3 \\sqrt{y}}{e^2}\\right) \\quad (x, y > 0)',
         options: [
           { id: 'a', labelTex: '3\\ln x + \\frac{1}{2}\\ln y - 2' },
           { id: 'b', labelTex: '3\\ln x + \\frac{1}{2}\\ln y - 2e' },
@@ -654,7 +654,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa4-2',
         moduleId: 'prealg-exp-log',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Inverse Functions',
         difficulty: 'Core',
         prompt: 'Find the inverse function f⁻¹(x) for:',
@@ -674,7 +674,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa4-3',
         moduleId: 'prealg-exp-log',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Exponential Equations',
         difficulty: 'Exam Standard',
         prompt: 'Solve for x:',
@@ -696,13 +696,13 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-trig-unit-circle',
     dayNumber: 5,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 5',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 5',
     title: 'Radians, The Unit Circle & Trigonometric Graphs',
     subtitle:
       'Internalize radian measure, exact special-angle values on the unit circle, all six trig functions, and amplitude/period/phase-shift graphs.',
     estimatedMinutes: 115,
-    labType: 'prealg-unit-circle',
+    labType: 'precalc-unit-circle',
     labTitle: 'Unit Circle & Trigonometric Angle Geometry Lab',
     labObjective:
       'Connect angle sweeps θ in radians to circular coordinates (cos θ, sin θ) and periodic wave amplitudes.',
@@ -734,7 +734,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         title: 'Sinusoidal Wave Parameters',
         statement:
-          'For y = A sin(B(x − C)) + D (or cos), |A| is the amplitude, 2π/|B| is the period, C is the horizontal phase shift, and D is the vertical midline.',
+          'For y = A sin(B(x − C)) + D (or cos) with A ≠ 0 and B ≠ 0, |A| is the amplitude, 2π/|B| is the period, C is the horizontal phase shift, and D is the vertical midline.',
         formulaTex:
           'y = A\\sin\\!\\big(B(x - C)\\big) + D \\implies \\text{Period } T = \\frac{2\\pi}{|B|} \\quad (\\text{for } \\tan/\\cot:\\; T = \\frac{\\pi}{|B|})',
         intuition:
@@ -783,7 +783,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa5-1',
         moduleId: 'prealg-trig-unit-circle',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Unit Circle Exact Values',
         difficulty: 'Core',
         prompt: 'Evaluate the exact value of:',
@@ -803,7 +803,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa5-2',
         moduleId: 'prealg-trig-unit-circle',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Period & Phase Shift',
         difficulty: 'Core',
         prompt: 'What are the period and horizontal phase shift of:',
@@ -823,7 +823,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa5-3',
         moduleId: 'prealg-trig-unit-circle',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Pythagorean Identities',
         difficulty: 'Exam Standard',
         prompt: 'If sin θ = −3/5 and θ is in Quadrant III, what is sec θ?',
@@ -845,8 +845,8 @@ export const PREALG_MODULES: CourseModule[] = [
   {
     id: 'prealg-trig-identities-series',
     dayNumber: 6,
-    course: 'prealg',
-    phase: 'Pre-Algebra · Foundation 6',
+    course: 'precalc',
+    phase: 'Precalculus Prep · Foundation 6',
     title: 'Inverse Trig, Trig Identities, Equations & Sequences',
     subtitle:
       'Master inverse trig domain/range restrictions, sum/difference and double/half-angle identities, solving trig equations, and sigma notation.',
@@ -946,7 +946,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa6-1',
         moduleId: 'prealg-trig-identities-series',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Inverse Trig Ranges',
         difficulty: 'Core',
         prompt: 'Evaluate the exact value of:',
@@ -966,7 +966,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa6-2',
         moduleId: 'prealg-trig-identities-series',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Solving Trig Equations',
         difficulty: 'Exam Standard',
         prompt: 'How many solutions does sin(2x) = 1/2 have on the interval [0, 2π)?',
@@ -986,7 +986,7 @@ export const PREALG_MODULES: CourseModule[] = [
       {
         id: 'prob-pa6-3',
         moduleId: 'prealg-trig-identities-series',
-        course: 'prealg',
+        course: 'precalc',
         topicTag: 'Sigma Notation',
         difficulty: 'Core',
         prompt: 'Compute the finite arithmetic sum:',

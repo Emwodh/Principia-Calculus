@@ -30,7 +30,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Integration by Parts (Reverse Product Rule)',
         statement:
-          'Derived directly from (uv)′ = u′v + uv′, IBP trades a hard integral for a simpler one.',
+          'For continuously differentiable functions u(x) and v(x), integrating (uv)′ = u′v + uv′ trades a hard integral for a simpler one:',
         formulaTex: '\\int u\\,dv = u v - \\int v\\,du',
         intuition:
           'Choose u using LIATE (highest on the list differentiates simpler) and let dv be the remaining factor you can easily integrate.',
@@ -314,7 +314,7 @@ export const CALC2_MODULES: CourseModule[] = [
     course: 'calc2',
     phase: 'Phase 3 · Improper Integrals, ODEs & Series',
     title: 'Improper Integrals & Comparison Tests',
-    subtitle: 'Determine when infinite regions have finite area—and spot hidden interior vertical asymptotes before they trap you.',
+    subtitle: 'Determine when infinite regions have finite area—and spot hidden interior vertical asymptotes before applying FTC.',
     estimatedMinutes: 120,
     labType: 'improper',
     labTitle: 'p-Integral Convergence & Infinite Tail Studio',
@@ -345,7 +345,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Comparison Test for Improper Integrals',
         statement:
-          'If 0 ≤ f(x) ≤ g(x) for x ≥ a: if the larger integral ∫ g converges, the smaller ∫ f converges; if the smaller ∫ f diverges, the larger ∫ g diverges.',
+          'If f and g are continuous with 0 ≤ f(x) ≤ g(x) for all x ≥ a: if ∫_a^∞ g(x) dx converges, then ∫_a^∞ f(x) dx converges; if ∫_a^∞ f(x) dx diverges, then ∫_a^∞ g(x) dx diverges.',
         formulaTex: '0 \\le f(x) \\le g(x) \\implies \\begin{cases} \\int g < \\infty \\implies \\int f < \\infty \\\\ \\int f = \\infty \\implies \\int g = \\infty \\end{cases}',
         intuition:
           'A ceiling that stays finite traps everything below it; a floor that shoots to infinity pushes everything above it to infinity.',
@@ -471,7 +471,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Arc Length & Surface Area of Revolution',
         statement:
-          'Pythagorean micro-segments ds = √(1 + [f′(x)]²) dx measure curve length and surface area:',
+          'If f′ is continuous on [a, b] (and f(x) ≥ 0 on [a, b] for surface area about the x-axis), Pythagorean micro-segments ds = √(1 + [f′(x)]²) dx measure curve length and surface area:',
         formulaTex: 'L = \\int_{a}^{b} \\sqrt{1 + [f\'(x)]^2}\\,dx \\qquad S = 2\\pi \\int_{a}^{b} f(x)\\sqrt{1 + [f\'(x)]^2}\\,dx',
         intuition:
           'Every arc length exam problem is algebraically rigged so 1 + (f′)² factors into a perfect square—look for (a + b)² vs (a − b)²!',
@@ -479,7 +479,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Separable ODEs & Logistic Growth',
         statement:
-          'A first-order ODE dy/dx = g(x)h(y) separates into ∫ (1/h(y)) dy = ∫ g(x) dx. Logistic growth obeys:',
+          'A first-order ODE dy/dx = g(x)h(y) separates (where h(y) ≠ 0) into ∫ (1/h(y)) dy = ∫ g(x) dx; check h(y) = 0 separately for constant equilibria. For logistic growth with K > 0 and P₀ ≠ 0:',
         formulaTex: '\\frac{dP}{dt} = kP\\left(1 - \\frac{P}{K}\\right) \\implies P(t) = \\frac{K}{1 + A e^{-kt}},\\quad A = \\frac{K - P_0}{P_0}',
         intuition:
           'Logistic populations grow fastest at half the carrying capacity (P = K/2), where the S-curve has its inflection point.',
@@ -624,7 +624,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Geometric Series Sum Formula',
         statement:
-          'A geometric series with first term a and common ratio r converges if and only if |r| < 1:',
+          'A geometric series with first term a ≠ 0 and common ratio r converges if and only if |r| < 1:',
         formulaTex: '\\sum_{n=0}^{\\infty} a r^n = \\frac{a}{1 - r} \\qquad (|r| < 1)',
         intuition:
           'Always check the starting index! If the sum starts at n = 2, the first term is a·r², not a.',
@@ -632,7 +632,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'nth-Term Divergence Test & p-Series',
         statement:
-          'If lim_{n→∞} aₙ ≠ 0, the series diverges immediately. For p-series:',
+          'If lim_{n→∞} aₙ does not exist or lim_{n→∞} aₙ ≠ 0, then ∑ aₙ diverges immediately. For p-series:',
         formulaTex: '\\lim_{n\\to\\infty} a_n \\neq 0 \\implies \\sum a_n \\text{ diverges} \\qquad \\Big| \\qquad \\sum_{n=1}^{\\infty} \\frac{1}{n^p} \\text{ converges} \\iff p > 1',
         intuition:
           'If the terms don’t even shrink to zero, you keep adding finite chunks forever. Conversely, shrinking to zero (like 1/n) is still not fast enough!',
@@ -640,7 +640,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Limit Comparison Test (LCT)',
         statement:
-          'For positive series ∑ aₙ and ∑ bₙ, if L = lim_{n→∞} (aₙ / bₙ) is finite and strictly positive (0 < L < ∞), then BOTH series behave identically.',
+          'For series ∑ aₙ and ∑ bₙ with strictly positive terms (aₙ > 0, bₙ > 0 for all sufficiently large n), if L = lim_{n→∞} (aₙ / bₙ) is finite and strictly positive (0 < L < ∞), then BOTH series converge or BOTH diverge.',
         formulaTex: '0 < \\lim_{n\\to\\infty} \\frac{a_n}{b_n} < \\infty \\implies \\sum a_n \\text{ and } \\sum b_n \\text{ both converge or both diverge}',
         intuition:
           'LCT is your ultimate shortcut for rational/radical series: drop all lower-order terms to pick bₙ, check L, and cite p-series.',
@@ -785,7 +785,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Alternating Series Test & Estimation Theorem',
         statement:
-          'For ∑ (-1)^{n-1} bₙ with bₙ > 0: if bₙ₊₁ ≤ bₙ (decreasing) and lim_{n→∞} bₙ = 0, the series converges and its truncation error satisfies:',
+          'For ∑ (-1)^{n-1} bₙ with bₙ > 0: if bₙ₊₁ ≤ bₙ (eventually non-increasing) and lim_{n→∞} bₙ = 0, the series converges and (once decreasing for n ≥ N) its truncation error satisfies:',
         formulaTex: '|S - S_N| = |R_N| \\le b_{N+1}',
         intuition:
           'Each step reverses direction and is shorter than the previous step, so you spiral inward and can never overshoot past the very next term.',
@@ -793,7 +793,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Ratio Test & Root Test',
         statement:
-          'Let L = lim_{n→∞} |aₙ₊₁ / aₙ| (Ratio) or L = lim_{n→∞} |aₙ|^{1/n} (Root):',
+          'Assuming the limit L = lim_{n→∞} |aₙ₊₁ / aₙ| (Ratio, with aₙ ≠ 0 for large n) or L = lim_{n→∞} |aₙ|^{1/n} (Root) exists or equals ∞:',
         formulaTex: 'L < 1 \\implies \\text{Absolutely Convergent}, \\quad L > 1 \\implies \\text{Divergent}, \\quad L = 1 \\implies \\text{Inconclusive}',
         intuition:
           'Both tests ask: "In the long run, does this series look like a geometric series with ratio L?"',
@@ -920,7 +920,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Taylor Series Centered at x = a',
         statement:
-          'If f has derivatives of all orders at a, its Taylor series expansion is:',
+          'If f has derivatives of all orders at a AND its Taylor remainder satisfies lim_{n→∞} Rₙ(x) = 0 on |x − a| < R, then f(x) equals the sum of its Taylor series on that interval:',
         formulaTex: 'f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x - a)^n',
         intuition:
           'Matching the 0th, 1st, 2nd, ..., n-th derivatives at x = a forces the polynomial to share position, slope, curvature, and higher bends with f(x).',
@@ -1057,7 +1057,7 @@ export const CALC2_MODULES: CourseModule[] = [
     labObjective:
       'Sweep θ from 0 to 2π across Rose, Cardioid, Limaçon, and Lemniscate curves while tracking polar radius r(θ) and accumulated sector area ½∫r² dθ.',
     keyTopics: [
-      'Parametric dy/dx & d²y/dx² (chain rule trap!)',
+      'Parametric dy/dx & d²y/dx² (chain rule division by dx/dt)',
       'Parametric Arc Length',
       'Polar-Cartesian conversion (x = r cos θ, y = r sin θ)',
       'Polar Area ½∫(r_outer² − r_inner²) dθ',
@@ -1073,7 +1073,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Parametric First & Second Derivatives',
         statement:
-          'For a curve defined by x = x(t), y = y(t):',
+          'For a smooth curve defined by differentiable functions x = x(t), y = y(t) with dx/dt ≠ 0 (and twice differentiable for d²y/dx²):',
         formulaTex: '\\frac{dy}{dx} = \\frac{dy/dt}{dx/dt}, \\qquad \\frac{d^2y}{dx^2} = \\frac{\\frac{d}{dt}\\left(\\frac{dy}{dx}\\right)}{dx/dt}',
         intuition:
           'To differentiate dy/dx with respect to x again, differentiate with respect to t and divide by dx/dt a SECOND time.',
@@ -1081,7 +1081,7 @@ export const CALC2_MODULES: CourseModule[] = [
       {
         title: 'Polar Sector Area & Arc Length',
         statement:
-          'Sweeping thin circular sectors of angle dθ (area ½r² dθ) from α to β:',
+          'For continuous r(θ) traced once over 0 ≤ β − α ≤ 2π without self-overlap (and continuously differentiable r′(θ) for arc length):',
         formulaTex: 'A = \\frac{1}{2}\\int_{\\alpha}^{\\beta} [r(\\theta)]^2\\,d\\theta \\qquad L = \\int_{\\alpha}^{\\beta} \\sqrt{r^2 + \\left(\\frac{dr}{d\\theta}\\right)^2}\\,d\\theta',
         intuition:
           'Unlike Cartesian rectangles (y dx), polar integration sums pizza slices of radius r and arc width r dθ.',
@@ -1182,26 +1182,26 @@ export const CALC2_MODULES: CourseModule[] = [
     id: 'calc2-synthesis',
     dayNumber: 14,
     course: 'calc2',
-    phase: 'Phase 4 · Parametric, Polar & Exam Synthesis',
-    title: '60-Second Exam Triage & Full Synthesis Playbook',
-    subtitle: 'Unify every Calculus I & II method into a lightning-fast exam recognition algorithm so you never freeze on a problem.',
+    phase: 'Phase 4 · Parametric, Polar & Problem Synthesis',
+    title: 'Problem-Solving Synthesis & Method Selection Playbook',
+    subtitle: 'Unify every Calculus I & II method into a clear structural decision framework so you recognize why each technique works.',
     estimatedMinutes: 120,
     labType: 'triage',
-    labTitle: 'Interactive Integration & Series Triage Engine',
+    labTitle: 'Interactive Integration & Series Method Selector',
     labObjective:
-      'Practice rapid pattern recognition: inspect an integral or series structure, pick the fastest optimal technique, and verify the exact decision path.',
+      'Practice structural recognition: inspect an integral or series form, choose the most natural technique, and review why it fits.',
     keyTopics: [
-      'The 60-Second Integration Decision Ladder',
+      'The 5-Step Integration Decision Ladder',
       'The 8-Step Series Convergence Flowchart',
-      'High-Yield Cross-Course Connections (Calc I ↔ Calc II)',
-      'Timed Full-Exam Execution Strategy',
+      'Core Cross-Course Connections (Calc I ↔ Calc II)',
+      'Structured Comprehensive Exam Review Strategy',
     ],
     prerequisites: ['Days 1–13 Complete'],
     studySprintChecklist: [
-      'Drill all 8 structural patterns inside the Interactive Triage Engine until selection takes < 5 seconds.',
-      'Review the Formula Vault in "Hide Answers (Recall Mode)" to verify zero blind spots.',
+      'Work through all structural patterns inside the Interactive Method Selector and explain why each choice works.',
+      'Review the Formula Vault in "Hide Answers (Recall Mode)" to identify topics needing reinforcement.',
       'Take the 45-minute Full Calc I & II Comprehensive Exam inside the Drill Exam tab.',
-      'Re-solve every missed problem from first principles before test day.',
+      'Re-solve every missed problem from first principles until every step is clear.',
     ],
     theorems: [
       {

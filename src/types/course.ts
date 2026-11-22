@@ -1,19 +1,19 @@
-export type CourseTrack = 'prealg' | 'calc1' | 'calc2';
+export type CourseTrack = 'precalc' | 'calc1' | 'calc2';
 
 export type StartingTrack = 'full' | 'calc1' | 'calc2';
 
-export type NavView = 'plan' | 'studio' | 'exam' | 'formulas';
+export type NavView = 'plan' | 'studio' | 'exam' | 'formulas' | 'about';
 
 export type StudioTab = 'videos' | 'theory' | 'lab' | 'examples' | 'practice';
 
 export type PaceId = 'cram7' | 'sprint14' | 'standard28';
 
 export type LabType =
-  | 'prealg-functions'
-  | 'prealg-quadratics'
-  | 'prealg-rationals'
-  | 'prealg-exp-log'
-  | 'prealg-unit-circle'
+  | 'precalc-functions'
+  | 'precalc-quadratics'
+  | 'precalc-rationals'
+  | 'precalc-exp-log'
+  | 'precalc-unit-circle'
   | 'limit'
   | 'derivative'
   | 'extrema'
@@ -131,7 +131,7 @@ export interface CourseModule {
 export interface FormulaEntry {
   id: string;
   category:
-    | 'Pre-Algebra & Trig'
+    | 'Precalculus Prep & Trig'
     | 'Limits & Continuity'
     | 'Derivatives'
     | 'Integrals'
@@ -142,6 +142,7 @@ export interface FormulaEntry {
   course: CourseTrack;
   name: string;
   lhsTex: string;
+  relationTex?: string;
   rhsTex: string;
   condition?: string;
   recallCue: string;
@@ -168,6 +169,7 @@ export interface ExamAttemptRecord {
 }
 
 export interface UserProgressState {
+  schemaVersion: number;
   paceId: PaceId;
   startingTrack: StartingTrack;
   startDateIso: string;

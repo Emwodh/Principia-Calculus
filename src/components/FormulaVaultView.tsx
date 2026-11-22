@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Eye, EyeOff, Printer, Search } from 'lucide-react';
+import { Eye, EyeOff, Flag, Printer, Search } from 'lucide-react';
 import { FORMULA_VAULT } from '../data/formulas';
 import type { FormulaEntry } from '../types/course';
 import { formatCourseTrackName } from '../utils/courseProgress';
+import { buildMathErrorIssueUrl } from '../utils/issueLinks';
 import { MathTex } from './MathTex';
 
 const CATEGORIES: ('All' | FormulaEntry['category'])[] = [
   'All',
-  'Pre-Algebra & Trig',
+  'Precalculus Prep & Trig',
   'Limits & Continuity',
   'Derivatives',
   'Integrals',
@@ -50,11 +51,11 @@ export function FormulaVaultView() {
     <main className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-8">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
         <div className="space-y-2 max-w-2xl">
-          <div className="text-xs font-medium text-[#64748B]">
+          <div className="text-xs font-medium text-[#475569]">
             Master Reference &amp; Active Recall · {FORMULA_VAULT.length} Essential University Identities
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold text-[#0F172A] text-balance">
-            Pre-Algebra &amp; Calculus I–II Formula Vault
+            Precalculus Prep &amp; Calculus I–II Formula Vault
           </h1>
           <p className="text-sm sm:text-base text-[#475569]">
             Every algebra/trig foundation, limit, derivative, integration technique,
@@ -96,7 +97,7 @@ export function FormulaVaultView() {
       <section className="space-y-4 no-print">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[240px] max-w-md">
-            <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#475569] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <label htmlFor="formula-search" className="sr-only">
               Search formulas by name, theorem, or symbol
             </label>
@@ -106,11 +107,11 @@ export function FormulaVaultView() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search Taylor, secant, Ratio Test, polar..."
-              className="w-full pl-10 pr-4 py-2.5 text-sm bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#94A3B8]"
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#64748B]"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-[#64748B] font-mono-tabular">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#475569] font-mono-tabular">
             <span>
               Showing {filtered.length} of {FORMULA_VAULT.length}
             </span>
@@ -206,7 +207,7 @@ export function FormulaVaultView() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-xs text-[#64748B]">
+                    <div className="text-xs text-[#475569]">
                       {entry.category} · {formatCourseTrackName(entry.course)}
                     </div>
                     <h2 className="text-base font-semibold text-[#0F172A] mt-0.5">
@@ -229,9 +230,13 @@ export function FormulaVaultView() {
                   >
                     <div className="overflow-x-auto">
                       {isHidden ? (
-                        <MathTex tex={`${entry.lhsTex} = \\;\\text{?}`} />
+                        <MathTex
+                          tex={`${entry.lhsTex} ${entry.relationTex ?? '='} \\;\\text{?}`}
+                        />
                       ) : (
-                        <MathTex tex={`${entry.lhsTex} = ${entry.rhsTex}`} />
+                        <MathTex
+                          tex={`${entry.lhsTex} ${entry.relationTex ?? '='} ${entry.rhsTex}`}
+                        />
                       )}
                     </div>
                     <span className="px-3 py-1.5 text-xs font-semibold text-[#1D4ED8] bg-[#EFF6FF] rounded-md whitespace-nowrap shrink-0">
@@ -241,15 +246,33 @@ export function FormulaVaultView() {
                 ) : (
                   <div className="p-3.5 bg-[#F8FAFC] rounded-lg flex flex-wrap items-center justify-between gap-3">
                     <div className="overflow-x-auto">
-                      <MathTex tex={`${entry.lhsTex} = ${entry.rhsTex}`} />
+                      <MathTex
+                        tex={`${entry.lhsTex} ${entry.relationTex ?? '='} ${entry.rhsTex}`}
+                      />
                     </div>
                   </div>
                 )}
 
-                <p className="text-xs text-[#475569] leading-relaxed">
-                  <strong className="font-medium text-[#0F172A]">Memory Cue: </strong>
-                  {entry.recallCue}
-                </p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-xs text-[#475569] leading-relaxed">
+                    <strong className="font-medium text-[#0F172A]">Memory Cue: </strong>
+                    {entry.recallCue}
+                  </p>
+                  <a
+                    href={buildMathErrorIssueUrl({
+                      itemId: entry.id,
+                      itemLabel: entry.name,
+                      kind: 'formula',
+                      context: entry.category,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[#475569] hover:text-[#1D4ED8] whitespace-nowrap shrink-0 no-print"
+                  >
+                    <Flag className="w-3 h-3" />
+                    <span>Report an error</span>
+                  </a>
+                </div>
               </article>
             );
           })}

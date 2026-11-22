@@ -1,5 +1,14 @@
-import { useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, Circle, RotateCcw, Search } from 'lucide-react';
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Circle,
+  Download,
+  RotateCcw,
+  Search,
+  Upload,
+} from 'lucide-react';
 import { MODULE_MEDIA_MAP, TOTAL_COURSE_VIDEOS } from '../data/moduleMediaAndNotes';
 import type {
   CourseModule,
@@ -16,6 +25,8 @@ import {
   formatShortDate,
   getModuleScheduleSlot,
   getModulesForStartingTrack,
+  parseProgressImport,
+  serializeProgressExport,
   type ProgressSummary,
 } from '../utils/courseProgress';
 import { MathTex } from './MathTex';
@@ -31,10 +42,12 @@ interface CoursePlanViewProps {
   onChangeStartDate: (isoDate: string) => void;
   onOpenExams: () => void;
   onOpenFormulas: () => void;
+  onOpenAbout: () => void;
+  onImportProgress: (imported: UserProgressState) => void;
   onResetProgress: () => void;
 }
 
-type FilterTrack = 'all' | 'prealg' | 'calc1' | 'calc2' | 'remaining';
+type FilterTrack = 'all' | 'precalc' | 'calc1' | 'calc2' | 'remaining';
 
 const HERO_IMAGE_PATH = '/src/assets/images/hero_calculus_plate_1795077044472.jpg';
 
@@ -55,10 +68,10 @@ const RAPID_PROTOCOL_STEPS = [
   },
   {
     index: '03',
-    title: 'Graded Recall & Timed Blitz',
+    title: 'Graded Recall & Practice Assessment',
     duration: '30–40 min',
     description:
-      'Solve all 3 mastery problems cold without checking hints. Finish each phase with a timed Drill Exam and Formula Vault recall pass to lock in exam speed.',
+      'Solve all 3 mastery problems cold without checking hints. Finish each phase with a Practice Exam and Formula Vault recall pass to build durable understanding.',
   },
 ];
 
@@ -73,12 +86,70 @@ export function CoursePlanView({
   onChangeStartDate,
   onOpenExams,
   onOpenFormulas,
+  onOpenAbout,
+  onImportProgress,
   onResetProgress,
 }: CoursePlanViewProps) {
   const [trackFilter, setTrackFilter] = useState<FilterTrack>('all');
   const [syllabusQuery, setSyllabusQuery] = useState('');
   const [heroImgFailed, setHeroImgFailed] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [transferNotice, setTransferNotice] = useState<{
+    kind: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleExportProgress = () => {
+    try {
+      const json = serializeProgressExport(progress);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `calculus-progress-${progress.startDateIso}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setTransferNotice({
+        kind: 'success',
+        message: 'Progress exported as JSON backup.',
+      });
+    } catch {
+      setTransferNotice({
+        kind: 'error',
+        message: 'Could not export progress in this browser environment.',
+      });
+    }
+  };
+
+  const handleImportFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === 'string' ? reader.result : '';
+      const parsed = parseProgressImport(text, modules[0].id);
+      if (!parsed.ok) {
+        setTransferNotice({ kind: 'error', message: parsed.error });
+        return;
+      }
+      onImportProgress(parsed.state);
+      setTransferNotice({
+        kind: 'success',
+        message: `Imported backup (${parsed.state.completedModuleIds.length} modules completed, ${parsed.state.watchedVideoIds.length} lectures watched).`,
+      });
+    };
+    reader.onerror = () => {
+      setTransferNotice({
+        kind: 'error',
+        message: 'Could not read the selected file.',
+      });
+    };
+    reader.readAsText(file);
+  };
 
   const completedSet = useMemo(
     () => new Set(progress.completedModuleIds),
@@ -104,7 +175,7 @@ export function CoursePlanView({
   const filteredModules = useMemo(() => {
     const q = syllabusQuery.trim().toLowerCase();
     return modules.filter((mod) => {
-      if (trackFilter === 'prealg' && mod.course !== 'prealg') return false;
+      if (trackFilter === 'precalc' && mod.course !== 'precalc') return false;
       if (trackFilter === 'calc1' && mod.course !== 'calc1') return false;
       if (trackFilter === 'calc2' && mod.course !== 'calc2') return false;
       if (trackFilter === 'remaining' && completedSet.has(mod.id)) return false;
@@ -133,7 +204,7 @@ export function CoursePlanView({
         <div className="lg:col-span-7 flex flex-col justify-between bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 sm:p-8 lg:p-10">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#475569]">
-              <span>Pre-Algebra → Calc I &amp; II</span>
+              <span>Precalculus Prep → Calc I &amp; II</span>
               <span aria-hidden="true">·</span>
               <span>{TOTAL_COURSE_VIDEOS} Embedded Video Lectures</span>
               <span aria-hidden="true">·</span>
@@ -141,11 +212,11 @@ export function CoursePlanView({
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] leading-[1.12] font-semibold tracking-tight text-[#0F172A] text-balance">
-              Master Pre-Algebra &amp; University Calculus I–II in the Shortest Possible Time
+              Structured Self-Study for Precalculus Prep &amp; University Calculus I–II
             </h1>
 
             <p className="text-base text-[#475569] leading-relaxed max-w-[62ch]">
-              Choose your starting level below—refresh Pre-Algebra &amp; Trig (Prep 1–6)
+              Choose your starting level below—refresh Precalculus Prep &amp; Trig (Prep 1–6)
               or jump straight into Calculus I &amp; II (Days 1–14)—with{' '}
               {TOTAL_COURSE_VIDEOS} embedded Professor Leonard &amp; 3Blue1Brown lectures,
               OpenStax chapters, interactive labs, and timed university exams.
@@ -155,7 +226,7 @@ export function CoursePlanView({
           <div className="pt-8 mt-6 border-t border-[#E2E8F0] space-y-4">
             {/* Quick Starting-Level Switcher right above CTA */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-[#64748B] mr-1">
+              <span className="text-xs font-medium text-[#475569] mr-1">
                 My Path:
               </span>
               {(Object.keys(STARTING_TRACK_CONFIGS) as StartingTrack[]).map((tid) => {
@@ -251,7 +322,7 @@ export function CoursePlanView({
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5">
-          <div className="text-xs font-medium text-[#64748B]">
+          <div className="text-xs font-medium text-[#475569]">
             Path Mastery ({activeStartingTrack.shortLabel})
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -271,33 +342,33 @@ export function CoursePlanView({
         </div>
 
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5">
-          <div className="text-xs font-medium text-[#64748B]">Video Course Lectures</div>
+          <div className="text-xs font-medium text-[#475569]">Video Course Lectures</div>
           <div className="mt-2 flex items-baseline gap-2 font-mono-tabular">
             <span className="text-2xl font-semibold text-[#0F172A]">
               {summary.watchedVideoCount}
             </span>
             <span className="text-xs text-[#475569]">/ {TOTAL_COURSE_VIDEOS} watched</span>
           </div>
-          <p className="mt-2.5 text-xs text-[#64748B]">
+          <p className="mt-2.5 text-xs text-[#475569]">
             Professor Leonard &amp; 3Blue1Brown embedded
           </p>
         </div>
 
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5">
-          <div className="text-xs font-medium text-[#64748B]">Graded Drills Solved</div>
+          <div className="text-xs font-medium text-[#475569]">Graded Drills Solved</div>
           <div className="mt-2 flex items-baseline gap-2 font-mono-tabular">
             <span className="text-2xl font-semibold text-[#0F172A]">
               {summary.solvedCorrectCount}
             </span>
             <span className="text-xs text-[#475569]">/ {summary.totalProblems} in path</span>
           </div>
-          <p className="mt-2.5 text-xs text-[#64748B] font-mono-tabular">
-            Prep {summary.prealgCompleted}/{summary.prealgTotal} · Calc I {summary.calc1Completed}/{summary.calc1Total} · Calc II {summary.calc2Completed}/{summary.calc2Total}
+          <p className="mt-2.5 text-xs text-[#475569] font-mono-tabular">
+            Prep {summary.precalcCompleted}/{summary.precalcTotal} · Calc I {summary.calc1Completed}/{summary.calc1Total} · Calc II {summary.calc2Completed}/{summary.calc2Total}
           </p>
         </div>
 
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-5">
-          <div className="text-xs font-medium text-[#64748B]">Projected Finish</div>
+          <div className="text-xs font-medium text-[#475569]">Projected Finish</div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-mono-tabular text-2xl font-semibold text-[#0F172A]">
               {formatShortDate(summary.projectedFinishDateIso)}
@@ -306,18 +377,18 @@ export function CoursePlanView({
               {summary.requiredHoursPerDay.toFixed(1)}h/day
             </span>
           </div>
-          <p className="mt-2.5 text-xs text-[#64748B] font-mono-tabular">
+          <p className="mt-2.5 text-xs text-[#475569] font-mono-tabular">
             {remainingHours} hrs across {summary.effectiveTotalDays} days
           </p>
         </div>
       </section>
 
-      {/* Section 3: Accelerated Pace Planner & 3-Pass Rapid Mastery Protocol */}
+      {/* Section 3: Study Pace Planner & 3-Pass Active Study Protocol */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-5">
           <div>
             <h2 className="font-display text-xl font-semibold text-[#0F172A]">
-              Compression Schedule
+              Study Pace Schedule
             </h2>
             <p className="mt-1 text-sm text-[#475569]">
               {activeStartingTrack.description}
@@ -355,6 +426,22 @@ export function CoursePlanView({
             {activePace.summary}
           </div>
 
+          {progress.paceId === 'cram7' && (
+            <div
+              role="note"
+              className="p-3.5 rounded-lg bg-[#FFFBEB] border border-[#F59E0B]/60 flex items-start gap-2.5 text-xs text-[#92400E] leading-relaxed"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-[#B45309]" />
+              <div>
+                <strong className="font-semibold text-[#78350F]">
+                  Review only: for people who already studied this material.
+                </strong>{' '}
+                Fast pacing builds familiarity, not mastery. If you are learning Calculus
+                for the first time, stay on the 28-day Steady Mastery default.
+              </div>
+            </div>
+          )}
+
           <div className="pt-4 border-t border-[#E2E8F0] flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-1.5">
               <label
@@ -375,7 +462,7 @@ export function CoursePlanView({
             </div>
 
             <div className="text-right font-mono-tabular">
-              <div className="text-xs text-[#64748B]">Exact Commitment</div>
+              <div className="text-xs text-[#475569]">Exact Commitment</div>
               <div className="text-lg font-semibold text-[#1D4ED8]">
                 {summary.requiredHoursPerDay.toFixed(1)} hrs/day · {summary.effectiveTotalDays} days
               </div>
@@ -386,18 +473,18 @@ export function CoursePlanView({
         <div className="lg:col-span-7 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-6 space-y-5">
           <div>
             <h2 className="font-display text-xl font-semibold text-[#0F172A]">
-              The 3-Pass Shortest-Time Study Protocol
+              The 3-Pass Active Study Protocol
             </h2>
             <p className="mt-1 text-sm text-[#475569]">
-              Passive lectures waste 70% of study time. Follow this exact loop on every
-              module to finish both semesters with genuine exam fluency.
+              Passive watching rarely sticks. Follow this active loop on every module to
+              build deep intuition and reliable problem-solving habits.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-1">
             {RAPID_PROTOCOL_STEPS.map((step) => (
               <div key={step.index} className="space-y-2">
-                <div className="flex items-center justify-between text-xs text-[#64748B] font-mono-tabular border-b border-[#E2E8F0] pb-2">
+                <div className="flex items-center justify-between text-xs text-[#475569] font-mono-tabular border-b border-[#E2E8F0] pb-2">
                   <span className="font-semibold text-[#1D4ED8]">{step.index}.</span>
                   <span>{step.duration}</span>
                 </div>
@@ -413,7 +500,7 @@ export function CoursePlanView({
         </div>
       </section>
 
-      {/* Section 4: Full 20-Module Curriculum Roadmap (Pre-Algebra + Calculus I & II) */}
+      {/* Section 4: Full 20-Module Curriculum Roadmap (Precalculus Prep + Calculus I & II) */}
       <section aria-labelledby="syllabus-heading" className="space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
@@ -433,7 +520,7 @@ export function CoursePlanView({
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {/* Quick Topic Search */}
             <div className="relative min-w-[220px]">
-              <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-[#475569] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <label htmlFor="syllabus-search" className="sr-only">
                 Search modules or topics
               </label>
@@ -443,7 +530,7 @@ export function CoursePlanView({
                 value={syllabusQuery}
                 onChange={(e) => setSyllabusQuery(e.target.value)}
                 placeholder="Jump to L'Hôpital, Taylor, Unit Circle..."
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#94A3B8]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg text-[#0F172A] placeholder:text-[#64748B]"
               />
             </div>
 
@@ -456,7 +543,7 @@ export function CoursePlanView({
               {(
                 [
                   { id: 'all', label: `All (${modules.length})` },
-                  { id: 'prealg', label: `Pre-Algebra (${summary.prealgTotal})` },
+                  { id: 'precalc', label: `Precalculus Prep (${summary.precalcTotal})` },
                   { id: 'calc1', label: `Calculus I (${summary.calc1Total})` },
                   { id: 'calc2', label: `Calculus II (${summary.calc2Total})` },
                   { id: 'remaining', label: 'Remaining' },
@@ -545,15 +632,15 @@ export function CoursePlanView({
               const modPrefix = formatModuleNumberPrefix(mod);
 
               const bannerTitle =
-                mod.course === 'prealg'
-                  ? 'Foundation Track · Pre-Algebra & Precalculus Prep (P1–P6 · Optional Warmup)'
+                mod.course === 'precalc'
+                  ? 'Foundation Track · Precalculus Prep (P1–P6 · Optional Warmup)'
                   : mod.course === 'calc1'
                     ? 'Semester I · Calculus I Core (Days 1–5)'
                     : 'Semester II · Calculus II Integration, Series & Polar Geometry (Days 6–14)';
 
               const bannerProgress =
-                mod.course === 'prealg'
-                  ? `${summary.prealgCompleted}/${summary.prealgTotal} complete`
+                mod.course === 'precalc'
+                  ? `${summary.precalcCompleted}/${summary.precalcTotal} complete`
                   : mod.course === 'calc1'
                     ? `${summary.calc1Completed}/${summary.calc1Total} complete`
                     : `${summary.calc2Completed}/${summary.calc2Total} complete`;
@@ -563,7 +650,7 @@ export function CoursePlanView({
                   {showSemesterBanner && (
                     <div className="px-5 sm:px-6 py-2.5 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between text-xs font-semibold text-[#475569]">
                       <span>{bannerTitle}</span>
-                      <span className="font-mono-tabular text-[#64748B] font-normal hidden sm:inline">
+                      <span className="font-mono-tabular text-[#475569] font-normal hidden sm:inline">
                         {bannerProgress}
                       </span>
                     </div>
@@ -594,7 +681,7 @@ export function CoursePlanView({
                       </button>
 
                       <div className="min-w-0 space-y-1">
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[#64748B] font-mono-tabular">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[#475569] font-mono-tabular">
                           <span className="font-semibold text-[#1D4ED8]">
                             {modLabel}
                           </span>
@@ -645,7 +732,7 @@ export function CoursePlanView({
                     </div>
 
                     <div className="flex items-center justify-between lg:justify-end gap-5 pl-9 lg:pl-0 shrink-0">
-                      <div className="text-xs font-mono-tabular text-[#64748B] whitespace-nowrap">
+                      <div className="text-xs font-mono-tabular text-[#475569] whitespace-nowrap">
                         Videos {watchedInMod}/{modVideos.length} · Drills {solvedInMod}/{mod.practiceProblems.length}
                       </div>
                       <button
@@ -676,44 +763,107 @@ export function CoursePlanView({
       </section>
 
       {/* Quiet Footer Actions */}
-      <footer className="pt-8 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-[#64748B]">
-        <div>
-          Principia Calculus · Pre-Algebra, Precalculus &amp; University Calculus I–II
-          Self-Study Platform. Progress saves automatically to this browser.
-        </div>
-
-        <div className="flex items-center gap-3">
-          {!confirmReset ? (
+      <footer className="pt-8 border-t border-[#E2E8F0] space-y-3 text-xs text-[#475569]">
+        {transferNotice && (
+          <div
+            role={transferNotice.kind === 'error' ? 'alert' : 'status'}
+            className={`px-3.5 py-2.5 rounded-lg border flex items-center justify-between gap-3 ${
+              transferNotice.kind === 'error'
+                ? 'bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]'
+                : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46]'
+            }`}
+          >
+            <span>{transferNotice.message}</span>
             <button
               type="button"
-              onClick={() => setConfirmReset(true)}
-              className="inline-flex items-center gap-1.5 text-[#64748B] hover:text-[#DC2626] transition-colors cursor-pointer py-1"
+              onClick={() => setTransferNotice(null)}
+              className="font-medium underline cursor-pointer shrink-0"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Progress</span>
+              Dismiss
             </button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-[#DC2626] font-medium">Clear all progress?</span>
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div>
+              CalcAtlas · Precalculus Prep &amp; University Calculus I–II
+              Self-Study Platform. Progress saves automatically to this browser.
+            </div>
+            <div>
+              Independent project — not affiliated with or endorsed by Professor Leonard
+              or 3Blue1Brown.{' '}
               <button
                 type="button"
-                onClick={() => {
-                  onResetProgress();
-                  setConfirmReset(false);
-                }}
-                className="px-2.5 py-1 text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-md font-medium cursor-pointer"
+                onClick={onOpenAbout}
+                className="text-[#1D4ED8] hover:underline font-medium cursor-pointer"
               >
-                Confirm Reset
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmReset(false)}
-                className="px-2.5 py-1 text-[#475569] bg-[#F1F5F9] hover:bg-[#E2E8F0] rounded-md cursor-pointer"
-              >
-                Cancel
+                About, Credits &amp; Licenses
               </button>
             </div>
-          )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={handleImportFileChange}
+              aria-label="Import progress JSON file"
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              onClick={handleExportProgress}
+              className="inline-flex items-center gap-1.5 text-[#475569] hover:text-[#1D4ED8] transition-colors cursor-pointer py-1"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Progress</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => importInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 text-[#475569] hover:text-[#1D4ED8] transition-colors cursor-pointer py-1"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Import Progress</span>
+            </button>
+
+            {!confirmReset ? (
+              <button
+                type="button"
+                onClick={() => setConfirmReset(true)}
+                className="inline-flex items-center gap-1.5 text-[#475569] hover:text-[#DC2626] transition-colors cursor-pointer py-1"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Progress</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-[#DC2626] font-medium">Clear all progress?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onResetProgress();
+                    setConfirmReset(false);
+                    setTransferNotice(null);
+                  }}
+                  className="px-2.5 py-1 text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded-md font-medium cursor-pointer"
+                >
+                  Confirm Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmReset(false)}
+                  className="px-2.5 py-1 text-[#475569] bg-[#F1F5F9] hover:bg-[#E2E8F0] rounded-md cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </footer>
     </main>
